@@ -4,6 +4,7 @@
 # Libraries
 import csv
 import os
+import math
 os.system("cls")
 
 def octact_identification(mod=5000):
@@ -85,15 +86,35 @@ def octact_identification(mod=5000):
                 octant.append(-4)
                 cm4=cm4+1
 
+    #Defining Range
+    
+    range1=[]
+    range_count=0
+    for x in range(0,30000,mod):
+        if x==0:
+            range1.append("0000 - {}".format(mod))
+            range_count=range_count+1
+        elif x+mod>30000:
+            range1.append("{} - 30000".format(x+1))
+            range_count=range_count+1
+        else:
+            range1.append("{} - {}".format(x+1,x+mod))
+            range_count=range_count+1
+    for x in range(range_count,len(u_dash)):
+        range1.append(" ")
+
 
     #Output the file to octant_output.csv
     file_output=open("octant_output.csv",'w')
-    file_output.writelines("Time,U,V,W,U Avg,V Avg,W Avg,U'=U-U avg,V'=V-V avg,W'=W-W avg,Octant, ,OctantID,1,-1,2,-2,3,-3,4,-4\n")
+    file_output.writelines("Time,U,V,W,U Avg,V Avg,W Avg,U'=U-U avg,V'=V-V avg,W'=W-W avg,Octant, ,Octant ID,1,-1,2,-2,3,-3,4,-4\n")
     file_output.writelines([str(time[0]),",",str(u[0]),",",str(v[0]),",",str(w[0]),",",str(u_avg),",",str(v_avg),",",str(w_avg),",",str(u_dash[0]),",",str(v_dash[0]),",",str(w_dash[0]),",",str(octant[0]),","," ",",","Overall Count",",",str(c1),",",str(cm1),",",str(c2),",",str(cm2),",",str(c3),",",str(cm3),",",str(c4),",",str(cm4),",","\n"])
-    for i in range(1,len(time)):
-        file_output.writelines([str(time[i]),",",str(u[i]),",",str(v[i]),",",str(w[i]),","," ",","," ",","," ",",",str(u_dash[i]),",",str(v_dash[i]),",",str(w_dash[i]),",",str(octant[i]),"\n"])
+    file_output.writelines([str(time[1]),",",str(u[1]),",",str(v[1]),",",str(w[1]),","," ",","," ",","," ",",",str(u_dash[2]),",",str(v_dash[2]),",",str(w_dash[2]),",",str(octant[2]),",","User Input",",","Mod {}".format(mod),"\n"])
+
+
+    for i in range(2,len(time)):
+        file_output.writelines([str(time[i]),",",str(u[i]),",",str(v[i]),",",str(w[i]),","," ",","," ",","," ",",",str(u_dash[i]),",",str(v_dash[i]),",",str(w_dash[i]),",",str(octant[i]),","," ",",",str(range1[i-2]),"\n"])
     file_output.close() #Closing the output file
 
-mod=5000
+mod=int(input(print("Enter the mod value:")))
 octact_identification(mod)
 print("Output File created successfully!")
