@@ -42,14 +42,36 @@ def octact_identification(mod=5000):
         for w_value in w:
             w_dash.append(w_value-w_avg)
 
+    #Tagging the octants by help of the video provided in the assignment
+    for i in range(0,len(u_dash)):
+        if(u_dash[i]>=0 and v_dash[i]>=0):
+            if w_dash[i]>=0:
+                octant.append(1)
+            else:
+                octant.append(-1)            
+        if(u_dash[i]<0 and v_dash[i]>=0):
+            if w_dash[i]>=0:
+                octant.append(2)
+            else:
+                octant.append(-2)            
+        if(u_dash[i]<0 and v_dash[i]<0):
+            if w_dash[i]>=0:
+                octant.append(3)
+            else:
+                octant.append(-3)            
+        if(u_dash[i]>=0 and v_dash[i]<0):
+            if w_dash[i]>=0:
+                octant.append(4)
+            else:
+                octant.append(-4)
+
      #Output the file to octant_output.csv
     file_output=open("octant_output.csv",'w')
     file_output.writelines("Time,U,V,W,U Avg, V Avg, W Avg, U'=U-U avg, V'=V-V avg, W'=W-W avg, Octant\n")
-    file_output.writelines([str(time[0]),",",str(u[0]),",",str(v[0]),",",str(w[0]),",",str(u_avg),",",str(v_avg),",",str(w_avg),",",str(u_dash[0]),",",str(v_dash[0]),",",str(w_dash[0]),"\n"])
+    file_output.writelines([str(time[0]),",",str(u[0]),",",str(v[0]),",",str(w[0]),",",str(u_avg),",",str(v_avg),",",str(w_avg),",",str(u_dash[0]),",",str(v_dash[0]),",",str(w_dash[0]),",",str(octant[0]),"\n"])
     for i in range(1,len(time)):
-        file_output.writelines([str(time[i]),",",str(u[i]),",",str(v[i]),",",str(w[i]),","," ",","," ",","," ",",",str(u_dash[i]),",",str(v_dash[i]),",",str(w_dash[i]),",","\n"])
+        file_output.writelines([str(time[i]),",",str(u[i]),",",str(v[i]),",",str(w[i]),","," ",","," ",","," ",",",str(u_dash[i]),",",str(v_dash[i]),",",str(w_dash[i]),",",str(octant[i]),"\n"])
     file_output.close() #Closing the output file
-
 
 mod=5000
 octact_identification(mod)
