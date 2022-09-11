@@ -127,14 +127,14 @@ def octant_identification(mod=5000):
     z = 0
     y = mod
     while y-mod < 30000:
-        mod_c1.append(octant[z:y+1].count(1))
-        mod_cm1.append(octant[z:y+1].count(-1))
-        mod_c2.append(octant[z:y+1].count(2))
-        mod_cm2.append(octant[z:y+1].count(-2))
-        mod_c3.append(octant[z:y+1].count(3))
-        mod_cm3.append(octant[z:y+1].count(-3))
-        mod_c4.append(octant[z:y+1].count(4))
-        mod_cm4.append(octant[z:y+1].count(-4))
+        mod_c1.append(octant[z:y].count(1))
+        mod_cm1.append(octant[z:y].count(-1))
+        mod_c2.append(octant[z:y].count(2))
+        mod_cm2.append(octant[z:y].count(-2))
+        mod_c3.append(octant[z:y].count(3))
+        mod_cm3.append(octant[z:y].count(-3))
+        mod_c4.append(octant[z:y].count(4))
+        mod_cm4.append(octant[z:y].count(-4))
         z = y+1
         y = y+mod
     # Appending the remaining length of the lists with a blank string for convenience in later steps
