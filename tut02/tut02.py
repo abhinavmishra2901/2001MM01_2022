@@ -6,6 +6,7 @@ from platform import python_version
 import os
 import openpyxl_dictreader
 from openpyxl import Workbook
+import math
 os.system("cls")
 
 
@@ -55,47 +56,47 @@ def octant_transition_count(mod=5000):
         exit()
 
     # Declaring List to store the count of each Octant ID
-    count=[0]*8
-    # Here cmi refers to -ith octant
+    count = [0]*8
 
     # Tagging the octants by help of the video provided in the assignment
     for i in range(0, len(time)):
         if (u_prime[i] >= 0 and v_prime[i] >= 0):
             if w_prime[i] >= 0:
                 octant.append(1)
-                count[0]+=1
+                count[0] += 1
             else:
                 octant.append(-1)
-                count[1]+=1
+                count[1] += 1
         if (u_prime[i] < 0 and v_prime[i] >= 0):
             if w_prime[i] >= 0:
                 octant.append(2)
-                count[2]+=1
+                count[2] += 1
             else:
                 octant.append(-2)
-                count[3]+=1
+                count[3] += 1
         if (u_prime[i] < 0 and v_prime[i] < 0):
             if w_prime[i] >= 0:
                 octant.append(3)
-                count[4]+=1
+                count[4] += 1
             else:
                 octant.append(-3)
-                count[5]+=1
+                count[5] += 1
         if (u_prime[i] >= 0 and v_prime[i] < 0):
             if w_prime[i] >= 0:
                 octant.append(4)
-                count[6]+=1
+                count[6] += 1
             else:
                 octant.append(-4)
-                count[7]+=1
+                count[7] += 1
 
-    # Defining Ranges with help of mod 
+    # Defining Ranges with help of mod
     range1 = []
 
-    #Also defining a list called label to store some label texts for column L in the excel sheet
+    # Also defining a list called label to store some label texts for column L in the excel sheet
     label = [" "]
     range_count = 0
-    #With each step in the loop, if the condition is satisfied we increase the range count by 1 and also append a blank space in label for convenience in later steps
+
+    # With each step in the loop, if the condition is satisfied we increase the range count by 1 and also append a blank space in label for convenience in later steps
     for x in range(0, 30000, mod):
         if x == 0:
             range1.append(".0000-{}".format(mod))
@@ -113,11 +114,7 @@ def octant_transition_count(mod=5000):
     # Adding a verified row to check the sum of individual range counts, also extending the label list
     range1.extend(("Verified", " ", " ", "Overall Transition Count",
                   " ", "Count", "+1", "-1", "+2", "-2", "+3", "-3", "+4", "-4"))
-    label.extend(("", "", "", "", "", "From"))
-    # Appending the remaining length of the lists with a blank string for convenience in later steps
-    for x in range(range_count+1, len(time)):
-        range1.append("")
-        label.append("")
+    label.extend(("", "", "", "", "", "From", "", "", "", "", "", "", ""))
 
     # Declaring Lists to store the count of each octant ID in the given mod
     mod_c1 = []
@@ -129,6 +126,9 @@ def octant_transition_count(mod=5000):
     mod_c4 = []
     mod_cm4 = []
     # Here cmi refers to -ith octant
+
+    # Overall Transition Count
+    overall_transition_list = []
 
     # Counting the octant values in each mod using a loop method for a particular range in the octant list
     z = 0
@@ -156,10 +156,7 @@ def octant_transition_count(mod=5000):
     mod_c4.extend((sum(mod_c4), " ", " ", " ", " ", "+4"))
     mod_cm4.extend((sum(mod_cm4), " ", " ", " ", " ", "-4"))
 
-    # Overall Transition Count
-    overall_transition_list = []
-
-    #A simple 2D loop to check the transitions. I am using two loops and then adding the count to overall_transition list
+    # A simple 2D loop to check the transitions. I am using two loops and then adding the count to overall_transition list
     for j in range(8):
         octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
         overall_transition = [0]*8
@@ -181,11 +178,11 @@ def octant_transition_count(mod=5000):
                     overall_transition[6] += 1
                 elif octant[i] == -4:
                     overall_transition[7] += 1
-        
-        #overall_transition_list is the list to store the 8 lists we obtained in the above loop
+
+        # overall_transition_list is the list to store the 8 lists we obtained in the above loop
         overall_transition_list.append(overall_transition)
 
-    #To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
+    # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
     for i in range(8):
         mod_c1.append(overall_transition_list[0][i])
         mod_cm1.append(overall_transition_list[1][i])
@@ -195,6 +192,70 @@ def octant_transition_count(mod=5000):
         mod_cm3.append(overall_transition_list[5][i])
         mod_c4.append(overall_transition_list[6][i])
         mod_cm4.append(overall_transition_list[7][i])
+    overall_transition_list.clear()
+
+    # Mod Transition Counts
+    # We start with a loop iterating the upper round off of 30000/mod
+    z = 0
+    y = mod
+    for x in range(math.ceil(30000/mod)):
+        # A special if condition, to handle the last case
+        if y >= 30000:
+            y = len(octant)-1
+
+        # Extending the lists to label the lists for each iteration
+        range1.extend(("", "", "Mod Transition Count",
+                      range1[x], "Count", "+1", "-1", "+2", "-2", "+3", "-3", "+4", "-4"))
+        label.extend(("", "", "", "", "", "From", "", "", "", "", "", "", ""))
+        mod_c1.extend((" ", " ", " ", "To", "+1"))
+        mod_cm1.extend((" ", " ", " ", " ", "-1"))
+        mod_c2.extend((" ", " ", " ", " ", "+2"))
+        mod_cm2.extend((" ", " ", " ", " ", "-2"))
+        mod_c3.extend((" ", " ", " ", " ", "+3"))
+        mod_cm3.extend((" ", " ", " ", " ", "-3"))
+        mod_c4.extend((" ", " ", " ", " ", "+4"))
+        mod_cm4.extend((" ", " ", " ", " ", "-4"))
+
+        # A simple 2D loop to check the transitions. I am using two loops and then adding the count to overall_transition list
+        for j in range(8):
+            octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
+            overall_transition = [0]*8
+            for i in range(z, y+1):
+                if octant[i-1] == octant_list[j]:
+                    if octant[i] == 1:
+                        overall_transition[0] += 1
+                    elif octant[i] == -1:
+                        overall_transition[1] += 1
+                    elif octant[i] == 2:
+                        overall_transition[2] += 1
+                    elif octant[i] == -2:
+                        overall_transition[3] += 1
+                    elif octant[i] == 3:
+                        overall_transition[4] += 1
+                    elif octant[i] == -3:
+                        overall_transition[5] += 1
+                    elif octant[i] == 4:
+                        overall_transition[6] += 1
+                    elif octant[i] == -4:
+                        overall_transition[7] += 1
+
+        # overall_transition_list is the list to store the 8 lists we obtained in the above loop
+            overall_transition_list.append(overall_transition)
+
+    # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
+        for i in range(8):
+            mod_c1.append(overall_transition_list[0][i])
+            mod_cm1.append(overall_transition_list[1][i])
+            mod_c2.append(overall_transition_list[2][i])
+            mod_cm2.append(overall_transition_list[3][i])
+            mod_c3.append(overall_transition_list[4][i])
+            mod_cm3.append(overall_transition_list[5][i])
+            mod_c4.append(overall_transition_list[6][i])
+            mod_cm4.append(overall_transition_list[7][i])
+        z = y+1
+        y = y+mod
+        # Clearing the lists for the iteration of next range
+        overall_transition_list.clear()
 
     # Appending the remaining length of the lists with a blank string for convenience in later steps
     for x in range(int(30000/mod)+2, len(time)):
@@ -206,6 +267,11 @@ def octant_transition_count(mod=5000):
         mod_cm3.append("")
         mod_c4.append("")
         mod_cm4.append("")
+
+    # Appending the remaining length of the lists with a blank string for convenience in later steps
+    for x in range(range_count+1, len(time)):
+        range1.append("")
+        label.append("")
 
     try:
         # Output the file to output_octant_transition_identify.xlsx
@@ -224,7 +290,7 @@ def octant_transition_count(mod=5000):
 
         # Writing the first two lines separately due to difference in the data length
         output_row_1 = [time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
-                        w_prime[0], octant[0], " ", "Overall Count", count[0],count[1],count[2],count[3],count[4],count[5],count[6],count[7]]
+                        w_prime[0], octant[0], " ", "Overall Count", count[0], count[1], count[2], count[3], count[4], count[5], count[6], count[7]]
         output_row_2 = [time[1], u[1], v[1], w[1], " ", " ", " ", u_prime[1], v_prime[1], w_prime[1],
                         octant[1], "User Input", "Mod {}".format(mod), " ", " ", " ", " ", " ", " ", " ", " "]
 
@@ -268,6 +334,8 @@ if ver == "3.8.10":
 else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
+# Declaring the mod and calling the function octant_transition_count
 mod = 5000
 octant_transition_count(mod)
+# Finally a message to show that all the steps have been completed successfully
 print("Output Success")
