@@ -8,7 +8,6 @@ from platform import python_version
 import os
 import openpyxl_dictreader
 from openpyxl import Workbook
-import math
 os.system("cls")
 
 
@@ -60,6 +59,8 @@ def octant_longest_subsequence_count():
 
     # Declaring List to store the count of each Octant ID
     count = [0]*8
+    long_sub_len = []
+    count_sub_len = []
 
     # Tagging the octants by help of the video provided in the assignment
     for i in range(0, len(time)):
@@ -139,21 +140,24 @@ def octant_longest_subsequence_count():
                     if count_check == max_count:
                         range_count += 1
                         count_check = 0
-            print(max_count, "", range_count)
+            long_sub_len.append(max_count)
+            count_sub_len.append(range_count)
 
         for i in range(8, len(time)):
             octant_ids.append(" ")
+            long_sub_len.append("")
+            count_sub_len.append("")
         for i in range(0, len(time)):
             if i == 0:
                 output_row.append([time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
-                                   w_prime[0], octant[0], "", octant_ids[0]])
+                                   w_prime[0], octant[0], "", octant_ids[0], long_sub_len[0], count_sub_len[0]])
             else:
                 output_row.append([time[i], u[i], v[i], w[i], " ", " ",
-                                  " ", u_prime[i], v_prime[i], w_prime[i], octant[i], "", octant_ids[i]])
+                                  " ", u_prime[i], v_prime[i], w_prime[i], octant[i], "", octant_ids[i], long_sub_len[i], count_sub_len[i]])
 
         # Writing the remaining values to the output_octant_transition_identify.xlsx file
         # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
-        for i in range(1, 14):
+        for i in range(1, 16):
             for j in range(2, len(time)+2):
                 cell = chr(i+64)+str(j)
                 sheet[cell] = output_row[j-2][i-1]
