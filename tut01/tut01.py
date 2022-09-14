@@ -24,6 +24,7 @@ def octant_identification(mod=5000):
     # Opening the octant_input.csv file in read mode
     try:
         with open("octant_input.csv", 'r') as input_file:
+            # Reading the input file into reader variable
             reader = csv.DictReader(input_file)
 
             # Storing the values of each key in the corresponding lists
@@ -54,6 +55,7 @@ def octant_identification(mod=5000):
         print("Some error occured while reading the input file")
         exit()
 
+# Task - 1: Find the individual count of each of the octant and write the overall count
     # Declaring Variables to store the count of each Octant ID
     c1 = 0
     cm1 = 0
@@ -96,7 +98,7 @@ def octant_identification(mod=5000):
                 octant.append(-4)
                 cm4 = cm4+1
 
-    # Defining Ranges with help of mod
+# Task - 2: Take a user input for the mod value. This mod value will be used to break the file into ranges. Here now you need to give the overall count of each octant in each of the mod ranges too
 
     range1 = []
     range_count = 0
@@ -110,6 +112,7 @@ def octant_identification(mod=5000):
         else:
             range1.append("{}-{}".format(x, x+mod-1))
             range_count = range_count+1
+
     # Appending the remaining length of the list with a blank string for convenience in later steps
     for x in range(range_count, len(time)):
         range1.append("")
