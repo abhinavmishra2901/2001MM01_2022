@@ -129,15 +129,15 @@ def octant_identification(mod=5000):
     z = 0
     y = mod
     while y-mod < 30000:
-        mod_c1.append(octant[z:y+1].count(1))
-        mod_cm1.append(octant[z:y+1].count(-1))
-        mod_c2.append(octant[z:y+1].count(2))
-        mod_cm2.append(octant[z:y+1].count(-2))
-        mod_c3.append(octant[z:y+1].count(3))
-        mod_cm3.append(octant[z:y+1].count(-3))
-        mod_c4.append(octant[z:y+1].count(4))
-        mod_cm4.append(octant[z:y+1].count(-4))
-        z = y+1
+        mod_c1.append(octant[z:y].count(1))
+        mod_cm1.append(octant[z:y].count(-1))
+        mod_c2.append(octant[z:y].count(2))
+        mod_cm2.append(octant[z:y].count(-2))
+        mod_c3.append(octant[z:y].count(3))
+        mod_cm3.append(octant[z:y].count(-3))
+        mod_c4.append(octant[z:y].count(4))
+        mod_cm4.append(octant[z:y].count(-4))
+        z = y
         y = y+mod
     # Appending the remaining length of the lists with a blank string for convenience in later steps
     for x in range(int(30000/mod), len(time)):
@@ -175,21 +175,8 @@ def octant_identification(mod=5000):
     finally:
         file_output.close()  # Closing the output file
 
-# Taking the input of the mod from the user
-
-
-# Data Validation of the input
-input_check = 0
-while input_check == 0:
-    try:
-        mod = int(input("Enter the mod value:"))
-        if mod <= 0 or mod > 30000:
-            print("The mod should be an integer between 1 and 30000.")
-        else:
-            input_check = 1
-    except ValueError:
-        print("The mod should be an integer between 1 and 30000.")
 
 # Calling the octant_identification function
+mod = 5000
 octant_identification(mod)
 print("Output File created successfully!")
