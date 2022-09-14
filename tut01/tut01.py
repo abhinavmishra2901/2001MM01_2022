@@ -6,7 +6,9 @@ import csv
 import os
 os.system("cls")
 
-#Octant Identification function with default value of mod as 5000
+# Octant Identification function with default value of mod as 5000
+
+
 def octant_identification(mod=5000):
 
     # Declaring the lists to store the values
@@ -53,7 +55,7 @@ def octant_identification(mod=5000):
         exit()
 
     # Declaring Variables to store the count of each Octant ID
-    c1=0
+    c1 = 0
     cm1 = 0
     c2 = 0
     cm2 = 0
@@ -65,28 +67,28 @@ def octant_identification(mod=5000):
 
     # Tagging the octants by help of the video provided in the assignment
     for i in range(0, len(time)):
-        if(u_dash[i] >= 0 and v_dash[i] >= 0):
+        if (u_dash[i] >= 0 and v_dash[i] >= 0):
             if w_dash[i] >= 0:
                 octant.append(1)
                 c1 = c1+1
             else:
                 octant.append(-1)
                 cm1 = cm1+1
-        if(u_dash[i] < 0 and v_dash[i] >= 0):
+        if (u_dash[i] < 0 and v_dash[i] >= 0):
             if w_dash[i] >= 0:
                 octant.append(2)
                 c2 = c2+1
             else:
                 octant.append(-2)
                 cm2 = cm2+1
-        if(u_dash[i] < 0 and v_dash[i] < 0):
+        if (u_dash[i] < 0 and v_dash[i] < 0):
             if w_dash[i] >= 0:
                 octant.append(3)
                 c3 = c3+1
             else:
                 octant.append(-3)
                 cm3 = cm3+1
-        if(u_dash[i] >= 0 and v_dash[i] < 0):
+        if (u_dash[i] >= 0 and v_dash[i] < 0):
             if w_dash[i] >= 0:
                 octant.append(4)
                 c4 = c4+1
@@ -98,15 +100,15 @@ def octant_identification(mod=5000):
 
     range1 = []
     range_count = 0
-    for x in range(0, 30000, mod):
+    for x in range(0, len(time), mod):
         if x == 0:
-            range1.append(".0000-{}".format(mod))
+            range1.append(".0000-{}".format(mod-1))
             range_count = range_count+1
-        elif x+mod > 30000:
-            range1.append("{}-30000".format(x+1))
+        elif x+mod > len(time)-1:
+            range1.append("{}-{}".format(x, len(time)-1))
             range_count = range_count+1
         else:
-            range1.append("{}-{}".format(x+1, x+mod))
+            range1.append("{}-{}".format(x, x+mod-1))
             range_count = range_count+1
     # Appending the remaining length of the list with a blank string for convenience in later steps
     for x in range(range_count, len(time)):
