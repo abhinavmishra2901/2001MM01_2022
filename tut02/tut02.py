@@ -97,17 +97,17 @@ def octant_transition_count(mod=5000):
     range_count = 0
 
     # With each step in the loop, if the condition is satisfied we increase the range count by 1 and also append a blank space in label for convenience in later steps
-    for x in range(0, 30000, mod):
+    for x in range(0, len(time), mod):
         if x == 0:
-            range1.append(".0000-{}".format(mod))
+            range1.append(".0000-{}".format(mod-1))
             range_count = range_count+1
             label.append("")
-        elif x+mod > 30000:
-            range1.append("{}-30000".format(x+1))
+        elif x+mod > len(time):
+            range1.append("{}-{}".format(x, len(time)-1))
             range_count = range_count+1
             label.append("")
         else:
-            range1.append("{}-{}".format(x+1, x+mod))
+            range1.append("{}-{}".format(x, x+mod-1))
             range_count = range_count+1
             label.append("")
 
