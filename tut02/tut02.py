@@ -134,15 +134,15 @@ def octant_transition_count(mod=5000):
     z = 0
     y = mod
     while y-mod < 30000:
-        mod_c1.append(octant[z:y+1].count(1))
-        mod_cm1.append(octant[z:y+1].count(-1))
-        mod_c2.append(octant[z:y+1].count(2))
-        mod_cm2.append(octant[z:y+1].count(-2))
-        mod_c3.append(octant[z:y+1].count(3))
-        mod_cm3.append(octant[z:y+1].count(-3))
-        mod_c4.append(octant[z:y+1].count(4))
-        mod_cm4.append(octant[z:y+1].count(-4))
-        z = y+1
+        mod_c1.append(octant[z:y].count(1))
+        mod_cm1.append(octant[z:y].count(-1))
+        mod_c2.append(octant[z:y].count(2))
+        mod_cm2.append(octant[z:y].count(-2))
+        mod_c3.append(octant[z:y].count(3))
+        mod_cm3.append(octant[z:y].count(-3))
+        mod_c4.append(octant[z:y].count(4))
+        mod_cm4.append(octant[z:y].count(-4))
+        z = y
         y = y+mod
 
     # Also appending the sum of each mod counts in order to verify the sum
@@ -160,8 +160,8 @@ def octant_transition_count(mod=5000):
     for j in range(8):
         octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
         overall_transition = [0]*8
-        for i in range(len(time)):
-            if octant[i-1] == octant_list[j]:
+        for i in range(len(time)-1):
+            if octant[i+1] == octant_list[j]:
                 if octant[i] == 1:
                     overall_transition[0] += 1
                 elif octant[i] == -1:
@@ -201,7 +201,7 @@ def octant_transition_count(mod=5000):
     for x in range(math.ceil(30000/mod)):
         # A special if condition, to handle the last case
         if y >= 30000:
-            y = len(octant)-1
+            y = len(octant)
 
         # Extending the lists to label the lists for each iteration
         range1.extend(("", "", "Mod Transition Count",
@@ -220,8 +220,8 @@ def octant_transition_count(mod=5000):
         for j in range(8):
             octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
             overall_transition = [0]*8
-            for i in range(z, y+1):
-                if octant[i-1] == octant_list[j]:
+            for i in range(z, y-1):
+                if octant[i+1] == octant_list[j]:
                     if octant[i] == 1:
                         overall_transition[0] += 1
                     elif octant[i] == -1:
@@ -241,6 +241,7 @@ def octant_transition_count(mod=5000):
 
         # overall_transition_list is the list to store the 8 lists we obtained in the above loop
             overall_transition_list.append(overall_transition)
+            # print(overall_transition_list)
 
     # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
         for i in range(8):
@@ -252,7 +253,7 @@ def octant_transition_count(mod=5000):
             mod_cm3.append(overall_transition_list[5][i])
             mod_c4.append(overall_transition_list[6][i])
             mod_cm4.append(overall_transition_list[7][i])
-        z = y+1
+        z = y
         y = y+mod
         # Clearing the lists for the iteration of next range
         overall_transition_list.clear()
