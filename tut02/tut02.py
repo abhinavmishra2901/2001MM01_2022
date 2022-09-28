@@ -201,7 +201,7 @@ def octant_transition_count(mod=5000):
     for x in range(math.ceil(30000/mod)):
         # A special if condition, to handle the last case
         if y >= 30000:
-            y = len(octant)
+            y = len(octant)-1
 
         # Extending the lists to label the lists for each iteration
         range1.extend(("", "", "Mod Transition Count",
@@ -220,7 +220,7 @@ def octant_transition_count(mod=5000):
         for j in range(8):
             octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
             overall_transition = [0]*8
-            for i in range(z, y-1):
+            for i in range(z, y):
                 if octant[i+1] == octant_list[j]:
                     if octant[i] == 1:
                         overall_transition[0] += 1
