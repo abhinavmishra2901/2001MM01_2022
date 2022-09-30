@@ -8,7 +8,6 @@ import openpyxl_dictreader
 from openpyxl import Workbook
 os.system("cls")
 
-
 # Code
 def octant_longest_subsequence_count_with_range():
 
@@ -115,11 +114,9 @@ def octant_longest_subsequence_count_with_range():
 
         # Declaring a list to store the octants
         octant_ids = ["+1", "-1", "+2", "-2", "+3", "-3", "+4", "-4"]
-
+        octant_ids2 = []  # Declaring octant_ids2 list for a different column with "Time" label
         # Loop to check the maximum consecutive subsequence as well as the count or repetition of the subsequence
         # Iterating through octant_ids
-        pos=1
-        octant_ids2=[]
         for j in octant_ids:
             octant_ids2.append(j)
             # Declaring variables to show the current maximum length of the subsequence and the previous maximum length of the subsequence
@@ -136,9 +133,10 @@ def octant_longest_subsequence_count_with_range():
             # Next I am declaring variables to show the count of repetition of the subsequence in the octant list
             range_count = 0
             count_check = 0
-            from_range=[]
-            count_range=[]
-            to_range=[]
+            # Also declaring variables to store the from, to and count range of longest subsequence
+            from_range = []
+            count_range = []
+            to_range = []
             # Again iterating through the octant list to find the count
             for i in range(len(time)):
                 if octant[i] != j:
@@ -149,8 +147,11 @@ def octant_longest_subsequence_count_with_range():
                         range_count += 1
                         count_check = 0
                         count_range.append("")
+                        # Appending the "From" and "To" time value to the from_range and to_range lists
                         from_range.append(time[i-max_count+1])
                         to_range.append(time[i])
+
+            # Appending the values to respective lists so that the particular column can be printed
             long_sub_len.append(max_count)
             long_sub_len_range.append(max_count)
             octant_ids2.append("Time")
@@ -161,21 +162,17 @@ def octant_longest_subsequence_count_with_range():
             count_sub_len_range.append(range_count)
             count_sub_len_range.append("To")
             count_sub_len_range.extend(to_range)
-        
-        for i in range(8, 16):
-            octant_ids.append(" ")
-            long_sub_len.append("")
-            # long_sub_len_range.append(" ")
-            count_sub_len.append("")
-            # count_sub_len_range.append(" ")        
-        for i in range(16, len(time)):
+
+        # Appending blank spaces
+        for i in range(8, len(time)):
             octant_ids.append(" ")
             octant_ids2.append(" ")
             long_sub_len.append("")
             long_sub_len_range.append(" ")
             count_sub_len.append("")
             count_sub_len_range.append(" ")
-        # print(octant_ids2[0:17])
+
+        # Running a loop to store the values to an output_row list
         for i in range(0, len(time)):
             if i == 0:
                 output_row.append([time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
@@ -184,7 +181,7 @@ def octant_longest_subsequence_count_with_range():
                 output_row.append([time[i], u[i], v[i], w[i], " ", " ",
                                   " ", u_prime[i], v_prime[i], w_prime[i], octant[i], "", octant_ids[i], long_sub_len[i], count_sub_len[i], "", octant_ids2[i], long_sub_len_range[i], count_sub_len_range[i]])
 
-        # Writing the remaining values to the output_octant_transition_identify.xlsx file
+        # Writing the values to the output_octant_transition_identify.xlsx file
         # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
         for i in range(1, 20):
             for j in range(2, len(time)+2):
