@@ -24,7 +24,7 @@ def octant_longest_subsequence_count_with_range():
     # Opening the input_octant_transition_identify.xlsx file in read mode
     try:
         reader = openpyxl_dictreader.DictReader(
-            "input_octant_longest_subsequence_with_range.xlsx", "Sheet1")
+            "small_longest_subsequence_with_range.xlsx", "Sheet1")
 
         # Storing the values of each key in the corresponding lists
         for row in reader:
