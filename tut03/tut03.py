@@ -4,10 +4,12 @@
 # By Abhinav Mishra - 2001MM01
 
 # Libraries
-from platform import python_version
-import os
-import openpyxl_dictreader
 from openpyxl import Workbook
+import openpyxl_dictreader
+import os
+from platform import python_version
+from datetime import datetime
+start_time = datetime.now()
 os.system("cls")
 
 
@@ -184,3 +186,7 @@ else:
 octant_longest_subsequence_count()
 # Finally a message to show that all the steps have been completed successfully
 print("Output Success")
+
+#This shall be the last lines of the code.
+end_time = datetime.now()
+print('Duration of Program Execution: {}'.format(end_time - start_time))
