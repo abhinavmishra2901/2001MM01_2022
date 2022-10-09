@@ -6,9 +6,13 @@ from platform import python_version
 import os
 import openpyxl_dictreader
 from openpyxl import Workbook
+from datetime import datetime
+start_time = datetime.now()
 os.system("cls")
 
 # Code
+
+
 def octant_longest_subsequence_count_with_range():
 
     # Declaring the lists to store the values
@@ -210,3 +214,7 @@ else:
 octant_longest_subsequence_count_with_range()
 # Finally a message to show that all the steps have been completed successfully
 print("Output Success")
+
+# This shall be the last lines of the code.
+end_time = datetime.now()
+print('Duration of Program Execution: {}'.format(end_time - start_time))
