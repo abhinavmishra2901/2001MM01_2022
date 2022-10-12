@@ -7,11 +7,35 @@ from platform import python_version
 import os
 import openpyxl_dictreader
 from openpyxl import Workbook
-import math
 os.system("cls")
 start_time = datetime.now()
 
 # Help https://youtu.be/N6PBd4XdnEw
+
+# Code
+
+# Function to compute the rank of octants
+
+
+def octant_rank_count(count):
+    # Overall Rank
+    overall_rank = []
+    # Creating a copy of the attribute list
+    count_copy = count.copy()
+    # Reversing the copy of the attribute list
+    count_copy.sort(reverse=True)
+    # Checking and appending the index of the sorted list's elements in the original list
+    for i in count_copy:
+        overall_rank.append(count.index(i))
+
+    # Storing the ranks to an octant_rank_list by mapping the indexes
+    octant_rank_list = [0]*8
+    rank = 1
+    for j in range(8):
+        check = overall_rank[j]
+        octant_rank_list[check] = rank
+        rank += 1
+    return octant_rank_list
 
 
 def octant_range_names(mod=5000):
@@ -27,7 +51,7 @@ def octant_range_names(mod=5000):
     w_prime = []
     octant = []
 
-    # Opening the input_octant_transition_identify.xlsx file in read mode
+    # Opening the octant_input.xlsx file in read mode
     try:
         reader = openpyxl_dictreader.DictReader(
             "octant_input.xlsx", "Sheet1")
@@ -97,25 +121,19 @@ def octant_range_names(mod=5000):
     # Defining Ranges with help of mod
     range1 = []
 
-    # Also defining a list called label to store some label texts for column L in the excel sheet
-    label = [" "]
-    range_count = 0
+    # Defining a list to store the ranks
+    rank_list = []
+    rank_list.append(octant_rank_count(count))
+    rank_list.append([""]*8)
 
     # With each step in the loop, if the condition is satisfied we increase the range count by 1 and also append a blank space in label for convenience in later steps
     for x in range(0, len(time), mod):
         if x == 0:
             range1.append(".0000-{}".format(mod-1))
-            range_count = range_count+1
-            label.append("")
         elif x+mod > len(time):
             range1.append("{}-{}".format(x, len(time)-1))
-            range_count = range_count+1
-            label.append("")
         else:
             range1.append("{}-{}".format(x, x+mod-1))
-            range_count = range_count+1
-            label.append("")
-
 
     # Declaring Lists to store the count of each octant ID in the given mod
     mod_c1 = []
@@ -127,9 +145,6 @@ def octant_range_names(mod=5000):
     mod_c4 = []
     mod_cm4 = []
     # Here cmi refers to -ith octant
-
-    # Overall Transition Count
-    overall_transition_list = []
 
     # Counting the octant values in each mod using a loop method for a particular range in the octant list
     z = 0
@@ -146,6 +161,37 @@ def octant_range_names(mod=5000):
         z = y
         y = y+mod
 
+    # Storing the ranks of the mod ranges in the rank_list variable. Here the elements are initially row-wise and I am changing it to column-wise to print later.
+    for i in range(len(mod_c1)):
+        mod_list = []
+        mod_list.append(mod_c1[i])
+        mod_list.append(mod_cm1[i])
+        mod_list.append(mod_c2[i])
+        mod_list.append(mod_cm2[i])
+        mod_list.append(mod_c3[i])
+        mod_list.append(mod_cm3[i])
+        mod_list.append(mod_c4[i])
+        mod_list.append(mod_cm4[i])
+        rank_list.append(octant_rank_count(mod_list))
+
+    # Creating column-wise list to store the ranks in the designated order
+    rank1 = []
+    rank2 = []
+    rank3 = []
+    rank4 = []
+    rank5 = []
+    rank6 = []
+    rank7 = []
+    rank8 = []
+    for i in range(len(rank_list)):
+        rank1.append(rank_list[i][0])
+        rank2.append(rank_list[i][1])
+        rank3.append(rank_list[i][2])
+        rank4.append(rank_list[i][3])
+        rank5.append(rank_list[i][4])
+        rank6.append(rank_list[i][5])
+        rank7.append(rank_list[i][6])
+        rank8.append(rank_list[i][7])
     # Appending the remaining length of the lists with a blank string for convenience in later steps
     for x in range(int(30000/mod)+2, len(time)):
         mod_c1.append("")
@@ -157,61 +203,97 @@ def octant_range_names(mod=5000):
         mod_c4.append("")
         mod_cm4.append("")
         range1.append("")
+        rank1.append("")
+        rank2.append("")
+        rank3.append("")
+        rank4.append("")
+        rank5.append("")
+        rank6.append("")
+        rank7.append("")
+        rank8.append("")
 
-    # try:
-    # Output the file to output_octant_transition_identify.xlsx
-    wb = Workbook()
-    sheet = wb.active
+    try:
+        # Output the file to output_octant_transition_identify.xlsx
+        wb = Workbook()
+        sheet = wb.active
 
-    # Header line
-    header_line = ["Time", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U-U avg", "V'=V-V avg",
-                    "W'=W-W avg", "Octant", " ", "Octant ID", "1", "-1", "2", "-2", "3", "-3", "4", "-4"]
+        # Header line
+        header_line1 = [""]*21
+        header_line1.extend((1, -1, 2, -2, 3, -3, 4, -4))
+        # Header line
+        header_line2 = ["Time", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U-U avg", "V'=V-V avg",
+                        "W'=W-W avg", "Octant", " ", "Octant ID", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "Rank 1", "Rank 2", "Rank 3", "Rank 4", "Rank 5", "Rank 6", "Rank 7", "Rank 8"]
 
-    # Loop to print the header line
-    for i in range(1, 22):
-        # The Cell Address. Converting integer to the corresponding character by ascii conversion
-        cell = chr(i+64)+'1'
-        sheet[cell] = header_line[i-1]
+        # Loop to print the header line1
+        for i in range(1, 27):
+            # The Cell Address. Converting integer to the corresponding character by ascii conversion
+            cell = chr(i+64)+'1'
+            sheet[cell] = header_line1[i-1]
+        for i in range(1, 4):
+            # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
+            cell = 'A'+chr(i+64)+'1'
+            sheet[cell] = header_line1[i+25]
 
-    # Writing the first two lines separately due to difference in the data length
-    output_row_1 = [time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
-                    w_prime[0], octant[0], " ", "Overall Count", count[0], count[1], count[2], count[3], count[4], count[5], count[6], count[7]]
-    output_row_2 = [time[1], u[1], v[1], w[1], " ", " ", " ", u_prime[1], v_prime[1], w_prime[1],
-                    octant[1], "User Input", "Mod {}".format(mod), " ", " ", " ", " ", " ", " ", " ", " "]
+        # Loop to print the header line2
+        for i in range(1, 27):
+            # The Cell Address. Converting integer to the corresponding character by ascii conversion
+            cell = chr(i+64)+'2'
+            sheet[cell] = header_line2[i-1]
+        for i in range(1, 4):
+            # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
+            cell = 'A'+chr(i+64)+'2'
+            sheet[cell] = header_line2[i+25]
 
-    # Declaring a list to store the output of remaining lines/rows
-    output_row = []
-    for i in range(2, len(time)):
-        output_row.append([time[i], u[i], v[i], w[i], " ", " ", " ", u_prime[i], v_prime[i], w_prime[i], octant[i], " ", range1[i-2],
-                            mod_c1[i-2], mod_cm1[i-2], mod_c2[i-2], mod_cm2[i-2], mod_c3[i-2], mod_cm3[i-2], mod_c4[i-2], mod_cm4[i-2]])
+        # Writing the first two lines separately due to difference in the data length
+        output_row_1 = [time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
+                        w_prime[0], octant[0], " ", "Overall Count", count[0], count[1], count[2], count[3], count[4], count[5], count[6], count[7], rank1[0], rank2[0], rank3[0], rank4[0], rank5[0], rank6[0], rank7[0], rank8[0]]
+        output_row_2 = [time[1], u[1], v[1], w[1], " ", " ", " ", u_prime[1], v_prime[1], w_prime[1],
+                        octant[1], "User Input", "Mod {}".format(mod), " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 
-    # Loop to print the remaining lines/rows into the cells
-    for i in range(1, 22):
-        # The Cell Address. Converting integer to the corresponding character by ascii conversion
-        cell = chr(i+64)+'2'
-        sheet[cell] = output_row_1[i-1]
-        # The Cell Address. Converting integer to the corresponding character by ascii conversion
-        cell = chr(i+64)+'3'
-        sheet[cell] = output_row_2[i-1]
+        # Declaring a list to store the output of remaining lines/rows
+        output_row = []
+        for i in range(2, len(time)):
+            output_row.append([time[i], u[i], v[i], w[i], " ", " ", " ", u_prime[i], v_prime[i], w_prime[i], octant[i], " ", range1[i-2],
+                               mod_c1[i-2], mod_cm1[i-2], mod_c2[i-2], mod_cm2[i-2], mod_c3[i-2], mod_cm3[i-2], mod_c4[i-2], mod_cm4[i-2], rank1[i], rank2[i], rank3[i], rank4[i], rank5[i], rank6[i], rank7[i], rank8[i]])
 
-    # Writing the remaining values to the output_octant_transition_identify.xlsx file
-    # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
-    for i in range(1, 22):
-        for j in range(4, len(time)+2):
-            cell = chr(i+64)+str(j)
-            sheet[cell] = output_row[j-4][i-1]
+        # Loop to print the remaining lines/rows into the cells
+        for i in range(1, 27):
+            # The Cell Address. Converting integer to the corresponding character by ascii conversion
+            cell = chr(i+64)+'3'
+            sheet[cell] = output_row_1[i-1]
+            # The Cell Address. Converting integer to the corresponding character by ascii conversion
+            cell = chr(i+64)+'4'
+            sheet[cell] = output_row_2[i-1]
 
-# except:
-#     print("Something went wrong while writing to octant_output.csv")
-#     exit()
+        for i in range(1, 4):
+            # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
+            cell = 'A'+chr(i+64)+'3'
+            sheet[cell] = output_row_1[i+25]
+            # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
+            cell = 'A'+chr(i+64)+'4'
+            sheet[cell] = output_row_2[i+25]
 
-# finally:
-    # Saving the workbook.
-    wb.save("octant_output_ranking_excel.xlsx")
-    wb.close()  # Closing the workbook.
+        # Writing the remaining values to the octant_output_ranking_excel.xlsx file
+        # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
+        for i in range(1, 27):
+            for j in range(5, len(time)+2):
+                cell = chr(i+64)+str(j)
+                sheet[cell] = output_row[j-5][i-1]
+        # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
+        for i in range(1, 4):
+            for j in range(5, len(time)+2):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell] = output_row[j-5][i+25]
 
+    except:
+        print("Something went wrong while writing to octant_output.csv")
+        exit()
 
-# Code
+    finally:
+        # Saving the workbook.
+        wb.save("octant_output_ranking_excel.xlsx")
+        wb.close()  # Closing the workbook.
+
 
 ver = python_version()
 
