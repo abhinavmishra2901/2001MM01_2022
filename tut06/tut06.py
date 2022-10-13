@@ -119,11 +119,21 @@ def attendance_report():
             roll_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
                 row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
             roll_output.close()  # Closing the output file
+
+        # Creating Consolidated Attendance Report
+        cons_output = open("output/attendance_report_consolidated.csv", 'w')
+        cons_output.writelines(header_line)
+        for row in final_rows:
+            cons_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
+                row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
+        cons_output.close()
+
     except:
         print("Something went wrong while writing to octant_output.csv")
         exit()
 
-#Version Check
+
+# Version Check
 ver = python_version()
 
 if ver == "3.8.10":
