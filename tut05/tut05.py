@@ -173,6 +173,7 @@ def octant_range_names(mod=5000):
         mod_list.append(mod_c4[i])
         mod_list.append(mod_cm4[i])
         rank_list.append(octant_rank_count(mod_list))
+    # print(rank_list)
 
     # Creating column-wise list to store the ranks in the designated order
     rank1 = []
@@ -183,6 +184,21 @@ def octant_range_names(mod=5000):
     rank6 = []
     rank7 = []
     rank8 = []
+
+    # Creating lists to store the index of the first rank, the first rank octant id and first rank octant name
+    first_rank_index = []
+    first_rank = []
+    first_rank_name = []
+    octant_id_list = [1, -1, 2, -2, 3, -3, 4, -4]
+
+    # Running a loop to map the index of rank 1 to the corresponding lists and then map the octant id to the octant name by using the octant_name_id_mapping dictionary
+    for i in range(len(rank_list)):
+        if 1 in rank_list[i]:
+            first_rank_index.append(rank_list[i].index(1))
+    for i in range(len(first_rank_index)):
+        first_rank.append(octant_id_list[first_rank_index[i]])
+    for i in range(len(first_rank)):
+        first_rank_name.append(octant_name_id_mapping[str(first_rank[i])])
     for i in range(len(rank_list)):
         rank1.append(rank_list[i][0])
         rank2.append(rank_list[i][1])
@@ -211,6 +227,8 @@ def octant_range_names(mod=5000):
         rank6.append("")
         rank7.append("")
         rank8.append("")
+        first_rank.append("")
+        first_rank_name.append("")
 
     try:
         # Output the file to output_octant_transition_identify.xlsx
@@ -219,17 +237,17 @@ def octant_range_names(mod=5000):
 
         # Header line
         header_line1 = [""]*21
-        header_line1.extend((1, -1, 2, -2, 3, -3, 4, -4))
+        header_line1.extend((1, -1, 2, -2, 3, -3, 4, -4, "", ""))
         # Header line
         header_line2 = ["Time", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U-U avg", "V'=V-V avg",
-                        "W'=W-W avg", "Octant", " ", "Octant ID", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "Rank 1", "Rank 2", "Rank 3", "Rank 4", "Rank 5", "Rank 6", "Rank 7", "Rank 8"]
+                        "W'=W-W avg", "Octant", " ", "Octant ID", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "Rank 1", "Rank 2", "Rank 3", "Rank 4", "Rank 5", "Rank 6", "Rank 7", "Rank 8", "Rank 1 Octant ID", "Rank 1 Octant Name"]
 
         # Loop to print the header line1
         for i in range(1, 27):
             # The Cell Address. Converting integer to the corresponding character by ascii conversion
             cell = chr(i+64)+'1'
             sheet[cell] = header_line1[i-1]
-        for i in range(1, 4):
+        for i in range(1, 6):
             # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
             cell = 'A'+chr(i+64)+'1'
             sheet[cell] = header_line1[i+25]
@@ -239,22 +257,22 @@ def octant_range_names(mod=5000):
             # The Cell Address. Converting integer to the corresponding character by ascii conversion
             cell = chr(i+64)+'2'
             sheet[cell] = header_line2[i-1]
-        for i in range(1, 4):
+        for i in range(1, 6):
             # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
             cell = 'A'+chr(i+64)+'2'
             sheet[cell] = header_line2[i+25]
 
         # Writing the first two lines separately due to difference in the data length
         output_row_1 = [time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
-                        w_prime[0], octant[0], " ", "Overall Count", count[0], count[1], count[2], count[3], count[4], count[5], count[6], count[7], rank1[0], rank2[0], rank3[0], rank4[0], rank5[0], rank6[0], rank7[0], rank8[0]]
+                        w_prime[0], octant[0], " ", "Overall Count", count[0], count[1], count[2], count[3], count[4], count[5], count[6], count[7], rank1[0], rank2[0], rank3[0], rank4[0], rank5[0], rank6[0], rank7[0], rank8[0], first_rank[0], first_rank_name[0]]
         output_row_2 = [time[1], u[1], v[1], w[1], " ", " ", " ", u_prime[1], v_prime[1], w_prime[1],
-                        octant[1], "User Input", "Mod {}".format(mod), " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+                        octant[1], "User Input", "Mod {}".format(mod), " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 
         # Declaring a list to store the output of remaining lines/rows
         output_row = []
         for i in range(2, len(time)):
             output_row.append([time[i], u[i], v[i], w[i], " ", " ", " ", u_prime[i], v_prime[i], w_prime[i], octant[i], " ", range1[i-2],
-                               mod_c1[i-2], mod_cm1[i-2], mod_c2[i-2], mod_cm2[i-2], mod_c3[i-2], mod_cm3[i-2], mod_c4[i-2], mod_cm4[i-2], rank1[i], rank2[i], rank3[i], rank4[i], rank5[i], rank6[i], rank7[i], rank8[i]])
+                               mod_c1[i-2], mod_cm1[i-2], mod_c2[i-2], mod_cm2[i-2], mod_c3[i-2], mod_cm3[i-2], mod_c4[i-2], mod_cm4[i-2], rank1[i], rank2[i], rank3[i], rank4[i], rank5[i], rank6[i], rank7[i], rank8[i], first_rank[i-1], first_rank_name[i-1]])
 
         # Loop to print the remaining lines/rows into the cells
         for i in range(1, 27):
@@ -265,7 +283,7 @@ def octant_range_names(mod=5000):
             cell = chr(i+64)+'4'
             sheet[cell] = output_row_2[i-1]
 
-        for i in range(1, 4):
+        for i in range(1, 6):
             # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
             cell = 'A'+chr(i+64)+'3'
             sheet[cell] = output_row_1[i+25]
@@ -280,7 +298,7 @@ def octant_range_names(mod=5000):
                 cell = chr(i+64)+str(j)
                 sheet[cell] = output_row[j-5][i-1]
         # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
-        for i in range(1, 4):
+        for i in range(1, 6):
             for j in range(5, len(time)+2):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell] = output_row[j-5][i+25]
