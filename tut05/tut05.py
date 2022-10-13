@@ -208,6 +208,28 @@ def octant_range_names(mod=5000):
         rank6.append(rank_list[i][5])
         rank7.append(rank_list[i][6])
         rank8.append(rank_list[i][7])
+
+    # Extending the 3 columns to store the rank1 mod values count
+    mod_c1.extend(("", "", "", "Octant ID"))
+    mod_c1.extend(octant_id_list)
+    mod_cm1.extend(("", "", "", "Octant Name"))
+    octant_name_list = []
+    for i in range(8):
+        octant_name_list.append(octant_name_id_mapping[str(octant_id_list[i])])
+    mod_cm1.extend(octant_name_list)
+    mod_c2.extend(("", "", "", "Count of Rank 1 Mod Values"))
+    rank1_mod_values = []
+    # Here we are slicing the rank1 list to exclude the overall rank1 count
+    rank1_mod_values.append(rank1[2:].count(1))
+    rank1_mod_values.append(rank2[2:].count(1))
+    rank1_mod_values.append(rank3[2:].count(1))
+    rank1_mod_values.append(rank4[2:].count(1))
+    rank1_mod_values.append(rank5[2:].count(1))
+    rank1_mod_values.append(rank6[2:].count(1))
+    rank1_mod_values.append(rank7[2:].count(1))
+    rank1_mod_values.append(rank8[2:].count(1))
+    mod_c2.extend(rank1_mod_values)
+
     # Appending the remaining length of the lists with a blank string for convenience in later steps
     for x in range(int(30000/mod)+2, len(time)):
         mod_c1.append("")
