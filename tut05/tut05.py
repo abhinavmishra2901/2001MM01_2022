@@ -258,31 +258,18 @@ def octant_range_names(mod=5000):
         sheet = wb.active
 
         # Header line
-        header_line1 = [""]*21
-        header_line1.extend((1, -1, 2, -2, 3, -3, 4, -4, "", ""))
-        # Header line
-        header_line2 = ["Time", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U-U avg", "V'=V-V avg",
-                        "W'=W-W avg", "Octant", " ", "Octant ID", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "Rank 1", "Rank 2", "Rank 3", "Rank 4", "Rank 5", "Rank 6", "Rank 7", "Rank 8", "Rank 1 Octant ID", "Rank 1 Octant Name"]
+        header_line = ["Time", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U-U avg", "V'=V-V avg",
+                       "W'=W-W avg", "Octant", " ", "Octant ID", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "Rank of 1", "Rank of -1", "Rank of 2", "Rank of -2", "Rank of 3", "Rank of -3", "Rank of 4", "Rank of -4", "Rank 1 Octant ID", "Rank 1 Octant Name"]
 
-        # Loop to print the header line1
+        # Loop to print the header line
         for i in range(1, 27):
             # The Cell Address. Converting integer to the corresponding character by ascii conversion
             cell = chr(i+64)+'1'
-            sheet[cell] = header_line1[i-1]
+            sheet[cell] = header_line[i-1]
         for i in range(1, 6):
             # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
             cell = 'A'+chr(i+64)+'1'
-            sheet[cell] = header_line1[i+25]
-
-        # Loop to print the header line2
-        for i in range(1, 27):
-            # The Cell Address. Converting integer to the corresponding character by ascii conversion
-            cell = chr(i+64)+'2'
-            sheet[cell] = header_line2[i-1]
-        for i in range(1, 6):
-            # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
-            cell = 'A'+chr(i+64)+'2'
-            sheet[cell] = header_line2[i+25]
+            sheet[cell] = header_line[i+25]
 
         # Writing the first two lines separately due to difference in the data length
         output_row_1 = [time[0], u[0], v[0], w[0], u_avg, v_avg, w_avg, u_prime[0], v_prime[0],
@@ -299,31 +286,31 @@ def octant_range_names(mod=5000):
         # Loop to print the remaining lines/rows into the cells
         for i in range(1, 27):
             # The Cell Address. Converting integer to the corresponding character by ascii conversion
-            cell = chr(i+64)+'3'
+            cell = chr(i+64)+'2'
             sheet[cell] = output_row_1[i-1]
             # The Cell Address. Converting integer to the corresponding character by ascii conversion
-            cell = chr(i+64)+'4'
+            cell = chr(i+64)+'3'
             sheet[cell] = output_row_2[i-1]
 
         for i in range(1, 6):
             # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
-            cell = 'A'+chr(i+64)+'3'
+            cell = 'A'+chr(i+64)+'2'
             sheet[cell] = output_row_1[i+25]
             # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
-            cell = 'A'+chr(i+64)+'4'
+            cell = 'A'+chr(i+64)+'3'
             sheet[cell] = output_row_2[i+25]
 
         # Writing the remaining values to the octant_output_ranking_excel.xlsx file
         # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
         for i in range(1, 27):
-            for j in range(5, len(time)+2):
+            for j in range(4, len(time)+2):
                 cell = chr(i+64)+str(j)
-                sheet[cell] = output_row[j-5][i-1]
+                sheet[cell] = output_row[j-4][i-1]
         # The Cell Address for AA to AE. Converting integer to the corresponding character by ascii conversion
         for i in range(1, 6):
-            for j in range(5, len(time)+2):
+            for j in range(4, len(time)+2):
                 cell = 'A'+chr(i+64)+str(j)
-                sheet[cell] = output_row[j-5][i+25]
+                sheet[cell] = output_row[j-4][i+25]
 
     except:
         print("Something went wrong while writing to octant_output.csv")
