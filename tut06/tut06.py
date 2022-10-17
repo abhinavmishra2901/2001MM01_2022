@@ -2,17 +2,25 @@
 # By Abhinav Mishra - 2001MM01
 
 # Libraries
+from email.mime.application import MIMEApplication
 from platform import python_version
 import os
 import csv
 
 from datetime import datetime
 import calendar
+import smtplib
+
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from typing import final
+
+# Code
 
 start_time = datetime.now()
 os.system("cls")
-
-# Code
 
 # Defining a Function to Find the day corresponding to the given date
 
@@ -20,6 +28,55 @@ os.system("cls")
 def findDay(date):
     born = datetime.strptime(date, '%d %m %Y').weekday()
     return (calendar.day_name[born])
+
+
+def email():
+    try:
+        mail_content = '''Hello Sir,
+        Please find attached the consolidated attendance report.
+        Thank You
+        Abhinav Mishra
+        2001MM01
+        '''
+        # The mail addresses and password
+        sender_address = 'abhinavmishra2901@gmail.com'
+        sender_pass = 'dnfxeinznyojcqqz'
+        receiver_address = 'cs3842022@gmail.com'
+        cc = 'abhinav_2001mm01@iitp.ac.in'
+        # Setup the MIME
+        message = MIMEMultipart()
+        message['From'] = sender_address
+        message['To'] = receiver_address
+        message['CC'] = cc
+        # The subject line
+        message['Subject'] = 'Consolidated Attendance Report sent by Python. It has an attachment.'
+        # The body and the attachments for the mail
+        message.attach(MIMEText(mail_content, 'plain'))
+        os.chdir(os.getcwd().replace('\\', "/")+"/output/")
+        # print(os.getcwd())
+        attach_file_name = 'attendance_report_consolidated.csv'
+        # Open the file as binary mode
+        attach_file = open(attach_file_name, 'rb')
+        payload = MIMEBase('application', 'octate-stream')
+        payload.set_payload((attach_file).read())
+        encoders.encode_base64(payload)  # encode the attachment
+        # add payload header with filename
+        payload.add_header('Content-Disposition',
+                           "attachment; filename= %s" % attach_file_name)
+        message.attach(payload)
+        # Create SMTP session for sending the mail
+        session = smtplib.SMTP('smtp.gmail.com', 587,
+                               timeout=120)  # use gmail with port
+        session.starttls()  # enable security
+        # login with mail_id and password
+        session.login(sender_address, sender_pass)
+        text = message.as_string()
+        session.sendmail(sender_address, receiver_address, text)
+        print('Mail Sent')
+    except:
+        print("There was some error in mailing the consolidate attendance report.")
+    finally:
+        session.quit()
 
 
 def attendance_report():
@@ -109,6 +166,9 @@ def attendance_report():
         final_rows.append(individual_row)
 
     try:
+
+        # OUTPUT - 1
+
         # Header File
         header_line = [
             "Roll,Name,total_lecture_taken,attendance_count_actual,attendance_count_fake,attendance_count_absent,Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal\n"]
@@ -120,6 +180,8 @@ def attendance_report():
                 row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
             roll_output.close()  # Closing the output file
 
+        # OUTPUT - 2
+
         # Creating Consolidated Attendance Report
         cons_output = open("output/attendance_report_consolidated.csv", 'w')
         cons_output.writelines(header_line)
@@ -127,6 +189,20 @@ def attendance_report():
             cons_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
                 row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
         cons_output.close()
+
+        # OUTPUT - 3
+        x_check = 0
+        while (x_check == 0):
+            x = input(
+                "Do you wish to email the consolidated Attendance Report to cs3842022@gmail.com? (YES/NO)")
+            if x.upper() == "YES":
+                email()
+                x_check = 1
+            elif x.upper() == "NO":
+                print("Ok!")
+                x_check = 1
+            else:
+                print("Please enter either YES or NO!")
 
     except:
         print("Something went wrong while writing to octant_output.csv")
