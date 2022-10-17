@@ -3,6 +3,7 @@
 
 # Libraries
 from email.mime.application import MIMEApplication
+from operator import indexOf
 from platform import python_version
 import os
 import csv
@@ -118,6 +119,42 @@ def attendance_report():
                 individual_timestamp.append(timestamp[i])
         student_timestamps.append(individual_timestamp)
 
+    # Checking for duplicate attendance on the same day
+    # Creating a duplicate list and datestamps list to store the data
+    duplicate = []
+    student_datestamps = []
+
+    # Appending the dates of every students data in student_datestamps list
+    for i in range(len(student_timestamps)):
+        student_datestamp = []
+        for j in range(len(student_timestamps[i])):
+            student_datestamp.append(student_timestamps[i][j][:10])
+        student_datestamps.append(student_datestamp)
+
+    # Running a loop to check the duplicates, first we store unique values in a unique list and
+    # then if duplicate exists in the unique list, it along with other data of the student gets appended in the duplicate list
+    for i in range(len(student_timestamps)):
+        unique = []
+        duplicate_element = [0, 0, 0, 0]
+        for j in range(len(student_timestamps[i])):
+            datestamp = student_timestamps[i][j][:10]
+            if datestamp not in unique:
+                unique.append(datestamp)
+            elif datestamp in unique:
+                duplicate_element[0] = datestamp
+                duplicate_element[1] = (reg_students[i][:8])
+                duplicate_element[2] = (reg_students[i][9:])
+                duplicate_element[3] += (student_datestamps[i].count(datestamp))
+                duplicate.append(duplicate_element)
+                duplicate_element = [0, 0, 0, 0]
+
+    # If the student has marked more than 2 attendance on the single day, the sublist may repeat.
+    # To avoid this, we remove repeating sub-lists from the duplicate list.
+    for i in range(len(duplicate)-1):
+        for j in range(i+1, len(duplicate)-1):
+            if duplicate[i] == duplicate[j]:
+                duplicate.remove(duplicate[j])
+
     # Creating various lists to store the corresponding data to be output later to the csv files
     fake_count = []
     actual_count = []
@@ -191,6 +228,8 @@ def attendance_report():
         cons_output.close()
 
         # OUTPUT - 3
+
+        # Asking the User for the option to mail the consolidated Attendance Report
         x_check = 0
         while (x_check == 0):
             x = input(
@@ -203,6 +242,18 @@ def attendance_report():
                 x_check = 1
             else:
                 print("Please enter either YES or NO!")
+
+        # OUTPUT - 4
+
+        # Creating Duplicate Attendance Report
+        dupl_output = open("output/attendance_report_duplicate.csv", 'w')
+        header_line = [
+            "Timestamp,Roll No., Name, Total Count of attendance on that day\n"]
+        dupl_output.writelines(header_line)
+        for row in duplicate:
+            dupl_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
+                row[3]), "\n"))
+        dupl_output.close()
 
     except:
         print("Something went wrong while writing to octant_output.csv")
