@@ -16,7 +16,6 @@ start_time = datetime.now()
 
 # Function to compute the rank of octants
 
-
 def octant_rank_count(count):
     # Overall Rank
     overall_rank = []
@@ -35,6 +34,11 @@ def octant_rank_count(count):
         check = overall_rank[j]
         octant_rank_list[check] = rank
         rank += 1
+    for j in range(8):
+        if octant_rank_list[j] == 0:
+            for x in range(1, 9):
+                if x not in octant_rank_list:
+                    octant_rank_list[j] = x
     return octant_rank_list
 
 
