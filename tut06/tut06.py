@@ -169,11 +169,9 @@ def attendance_report():
             # Checking the condition if the attendance were marked within the class duration or not
             if j[:10].replace('/', ' ') not in total_dates:
                 total_dates.append(j[:10].replace('/', ' '))
-            if (int(j[11:13]) < 14 or int(j[11:13]) > 14) and (j[11:] != "15:00:00"):
-                # Removing fake counts from the individual list
-                student_timestamps[i].remove(j)
+            if (int(j[11:13]) != 14):
                 fake += 1  # increasing the fake attendance count if any fake attendance was marked by the student
-        actual = len(student_timestamps[i])
+        actual = len(student_timestamps[i])-fake
         fake_count.append(fake)
         actual_count.append(actual)
 
