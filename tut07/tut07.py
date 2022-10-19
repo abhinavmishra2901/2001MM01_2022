@@ -1,10 +1,16 @@
 
 # Libraries
 from datetime import datetime
+from multiprocessing import parent_process
 from platform import python_version
 import os
 import openpyxl_dictreader
+import openpyxl
+from openpyxl.styles import Color, PatternFill, Font, Border
+from openpyxl.styles import colors
+from openpyxl.cell import Cell
 from openpyxl import Workbook
+from openpyxl.styles.borders import Border, Side, BORDER_THIN
 import math
 os.system("cls")
 start_time = datetime.now()
@@ -18,7 +24,6 @@ start_time = datetime.now()
 # Code
 
 # Function - 1 to count the octant ranks
-
 
 def octant_rank_count(count):
     # Overall Rank
@@ -48,7 +53,6 @@ def octant_rank_count(count):
 
 # Function - 2 to write the octant range names
 
-
 def octant_range_names(sheet, inputfile, mod=5000):
     octant_name_id_mapping = {"1": "Internal outward interaction", "-1": "External outward interaction", "2": "External Ejection",
                               "-2": "Internal Ejection", "3": "External inward interaction", "-3": "Internal inward interaction", "4": "Internal sweep", "-4": "External sweep"}
@@ -75,9 +79,9 @@ def octant_range_names(sheet, inputfile, mod=5000):
             w.append(float(row['W']))
 
         # Calculating the average of U, V, W
-        u_avg = round(sum(u)/len(u),3)
-        v_avg = round(sum(v)/len(v),3)
-        w_avg = round(sum(w)/len(w),3)
+        u_avg = round(sum(u)/len(u), 3)
+        v_avg = round(sum(v)/len(v), 3)
+        w_avg = round(sum(w)/len(w), 3)
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
@@ -199,7 +203,7 @@ def octant_range_names(sheet, inputfile, mod=5000):
     first_rank_index = []
     first_rank = []
     first_rank_name = []
-    octant_id_list = [1, -1, 2, -2, 3, -3, 4, -4]
+    octant_id_list = ["1", "-1", "2", "-2", "3", "-3", "4", "-4"]
 
     # Running a loop to map the index of rank 1 to the corresponding lists and then map the octant id to the octant name by using the octant_name_id_mapping dictionary
     for i in range(len(rank_list)):
@@ -263,6 +267,8 @@ def octant_range_names(sheet, inputfile, mod=5000):
         first_rank_name.append("")
 
     try:
+        bd = Side(border_style='thin')
+        thin_border = Border(left=bd, top=bd, right=bd, bottom=bd)
         # Header line1
         header_line1 = ["", "", "", "", "", "", "", "", "",
                         "", "", " ", " ", "Overall Octant Count", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
@@ -345,6 +351,7 @@ def octant_range_names(sheet, inputfile, mod=5000):
                 for j in range(5, len(time)+2):
                     cell = chr(i+64)+str(j)
                     sheet[cell] = output_row[j-5][i-2]
+
             else:
                 for j in range(5, len(time)+2):
                     cell = chr(i+64)+str(j)
@@ -356,10 +363,40 @@ def octant_range_names(sheet, inputfile, mod=5000):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell] = output_row[j-5][i+24]
 
+        # Highlighting the Rank-1 Values
+        for i in range(23, 27):
+            for j in range(4, 5+int(len(time)/mod)+1):
+                cell = chr(i+64)+str(j)
+                sheet[cell].border = thin_border
+                if sheet[cell].value == 1:
+                    highlight = PatternFill(
+                        start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+                    sheet[cell].fill = highlight
+        for i in range(1, 5):
+            for j in range(4, 5+int(len(time)/mod)+1):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell].border = thin_border
+                if sheet[cell].value == 1:
+                    highlight = PatternFill(
+                        start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+                    sheet[cell].fill = highlight
+
+        # Adding Borders to the required cells
+        for i in range(14, 27):
+            for j in range(3, 3+int(len(time)/mod)+3):
+                cell = chr(i+64)+str(j)
+                sheet[cell].border = thin_border
+        for i in range(1, 7):
+            for j in range(3, 3+int(len(time)/mod)+3):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell].border = thin_border
+        for i in range(3, 6):
+            for j in range(12, 21):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell].border = thin_border
     except:
         print("Something went wrong while writing to octant_output.csv")
         exit()
-
 
 # Function - 3 to write the transition count
 
@@ -388,9 +425,9 @@ def octant_transition_count(sheet, inputfile, mod=5000):
             w.append(float(row['W']))
 
         # Calculating the average of U, V, W
-        u_avg = round(sum(u)/len(u),3)
-        v_avg = round(sum(v)/len(v),3)
-        w_avg = round(sum(w)/len(w),3)
+        u_avg = round(sum(u)/len(u), 3)
+        v_avg = round(sum(v)/len(v), 3)
+        w_avg = round(sum(w)/len(w), 3)
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
@@ -624,6 +661,9 @@ def octant_transition_count(sheet, inputfile, mod=5000):
         label.append("")
 
     try:
+        bd = Side(border_style='thin')
+        thin_border = Border(left=bd, top=bd, right=bd, bottom=bd)
+
         # Declaring a list to store the output of lines/rows
         output_row = []
         for i in range(0, len(time)):
@@ -637,12 +677,27 @@ def octant_transition_count(sheet, inputfile, mod=5000):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell] = output_row[j-1][i-8]
 
+        # Applying borders to the required cells
+        for i in range(9, 18):
+            for j in range(3, 12):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell].border = thin_border
+
+        start_row = 17
+        end_row = 26
+        for i in range(int(len(time)/mod)+1):
+            for j in range(9, 18):
+                for k in range(start_row, end_row):
+                    cell = 'A'+chr(j+64)+str(k)
+                    sheet[cell].border = thin_border
+            start_row += 14
+            end_row += 14
+
     except:
         print("Something went wrong while writing to octant_output.csv")
         exit()
 
 # Function - 4 to write the longest subsequence count with range
-
 
 def octant_longest_subsequence_count_with_range(sheet, inputfile):
 
@@ -669,9 +724,9 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
             w.append(float(row['W']))
 
         # Calculating the average of U, V, W
-        u_avg = round(round(sum(u)/len(u),3),3)
-        v_avg = round(round(sum(v)/len(v),3),3)
-        w_avg = round(round(sum(w)/len(w),3),3)
+        u_avg = round(round(sum(u)/len(u), 3), 3)
+        v_avg = round(round(sum(v)/len(v), 3), 3)
+        w_avg = round(round(sum(w)/len(w), 3), 3)
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
@@ -732,6 +787,9 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
                 count[7] += 1
 
     try:
+        bd = Side(border_style='thin')
+        thin_border = Border(left=bd, top=bd, right=bd, bottom=bd)
+
         # Header Labels
         sheet['AS1'] = "Longest Subsequence Length"
         sheet['AW1'] = "Longest Subsequence Length with Range"
@@ -800,6 +858,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
             count_sub_len_range.append("To")
             count_sub_len_range.extend(to_range)
 
+        flag=len(count_sub_len_range)
         # Appending blank spaces
         for i in range(8, len(time)):
             octant_ids.append(" ")
@@ -825,21 +884,49 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell] = output_row[j-4][i-19]
 
+        # Applying borders to the required cells
+        for i in range(19, 22):
+            for j in range(3, 12):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell].border = thin_border        
+        for i in range(23, 26):
+            for j in range(3, flag+4):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell].border = thin_border
+
     except:
         print("Something went wrong while writing to octant_output.csv")
         exit()
 
 
 def octant_analysis(mod=5000):
-    inputfile = "input/2.0.xlsx"
-    wb = Workbook()
-    sheet = wb.active
-    octant_range_names(sheet, inputfile, mod)
-    octant_transition_count(sheet, inputfile, mod)
-    octant_longest_subsequence_count_with_range(sheet, inputfile)
-    # Saving the workbook.
-    wb.save("Output_File.xlsx")
-    wb.close()  # Closing the workbook.
+    os.chdir("input")
+    for inputfile in os.listdir():
+        if inputfile=="3.4.xlsx":
+            continue
+        wb = Workbook()
+        sheet = wb.active
+        octant_range_names(sheet, inputfile, mod)
+        octant_transition_count(sheet, inputfile, mod)
+        octant_longest_subsequence_count_with_range(sheet, inputfile)
+
+        # Adjusting Column Widths
+        for col in sheet.columns:
+            max_length = 0
+            column = col[0].column_letter  # Get the column name
+            for cell in col:
+                try:  # Necessary to avoid error on empty cells
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            adjusted_width = (max_length+1)
+            sheet.column_dimensions[column].width = adjusted_width
+        parent=os.path.dirname(os.getcwd())
+        output_path=parent.replace("\\","/")+"/output/"+str(inputfile[:3])+" cm_vel_octant_analysis_mod_"+str(mod)+".xlsx"
+        # Saving the workbook.
+        wb.save(output_path)
+        wb.close()  # Closing the workbook.
 
 
 ver = python_version()
