@@ -1,3 +1,5 @@
+# Assignment 06 CS384 -     Octant Batch Processing andMerging of Assignment Tut01-05.
+# By Abhinav Mishra - 2001MM01
 
 # Libraries
 from datetime import datetime
@@ -12,6 +14,7 @@ from openpyxl.cell import Cell
 from openpyxl import Workbook
 from openpyxl.styles.borders import Border, Side, BORDER_THIN
 import math
+
 os.system("cls")
 start_time = datetime.now()
 
@@ -24,6 +27,7 @@ start_time = datetime.now()
 # Code
 
 # Function - 1 to count the octant ranks
+
 
 def octant_rank_count(count):
     # Overall Rank
@@ -43,6 +47,8 @@ def octant_rank_count(count):
         check = overall_rank[j]
         octant_rank_list[check] = rank
         rank += 1
+
+    # Condition if two ranks are equal
     for j in range(8):
         if octant_rank_list[j] == 0:
             for x in range(1, 9):
@@ -53,7 +59,8 @@ def octant_rank_count(count):
 
 # Function - 2 to write the octant range names
 
-def octant_range_names(sheet, inputfile, mod=5000):
+
+def octant_range_names(sheet, inputfile, mod):
     octant_name_id_mapping = {"1": "Internal outward interaction", "-1": "External outward interaction", "2": "External Ejection",
                               "-2": "Internal Ejection", "3": "External inward interaction", "-3": "Internal inward interaction", "4": "Internal sweep", "-4": "External sweep"}
     # Declaring the lists to store the values
@@ -90,10 +97,12 @@ def octant_range_names(sheet, inputfile, mod=5000):
             v_prime.append(v_value-v_avg)
         for w_value in w:
             w_prime.append(w_value-w_avg)
+
     # FileNotFound Error
     except FileNotFoundError:
         print("Input File not found!")
         exit()
+
     # Other errors if any
     except:
         print("Some error occured while reading the input file")
@@ -233,6 +242,7 @@ def octant_range_names(sheet, inputfile, mod=5000):
     rank8.extend(octant_name_list)
     first_rank.extend(("", "", "", "Count of Rank 1 Mod Values"))
     rank1_mod_values = []
+
     # Here we are slicing the rank1 list to exclude the overall rank1 count
     rank1_mod_values.append(rank1[2:].count(1))
     rank1_mod_values.append(rank2[2:].count(1))
@@ -267,14 +277,17 @@ def octant_range_names(sheet, inputfile, mod=5000):
         first_rank_name.append("")
 
     try:
+        # Defining thin_border
         bd = Side(border_style='thin')
         thin_border = Border(left=bd, top=bd, right=bd, bottom=bd)
+
         # Header line1
         header_line1 = ["", "", "", "", "", "", "", "", "",
                         "", "", " ", " ", "Overall Octant Count", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
         # Header line2
         header_line2 = ["Time", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U-U avg", "V'=V-V avg",
                         "W'=W-W avg", "Octant", " ", " ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+
         # Loop to print the header line1
         for i in range(1, 27):
             # The Cell Address. Converting integer to the corresponding character by ascii conversion
@@ -391,7 +404,7 @@ def octant_range_names(sheet, inputfile, mod=5000):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell].border = thin_border
         for i in range(3, 6):
-            for j in range(12, 21):
+            for j in range(3+int(len(time)/mod)+6, 3+int(len(time)/mod)+4+11):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell].border = thin_border
     except:
@@ -400,7 +413,8 @@ def octant_range_names(sheet, inputfile, mod=5000):
 
 # Function - 3 to write the transition count
 
-def octant_transition_count(sheet, inputfile, mod=5000):
+
+def octant_transition_count(sheet, inputfile, mod):
 
     # Declaring the lists to store the values
     time = []
@@ -661,14 +675,16 @@ def octant_transition_count(sheet, inputfile, mod=5000):
         label.append("")
 
     try:
+        # Defining thin_border
         bd = Side(border_style='thin')
         thin_border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
         # Declaring a list to store the output of lines/rows
         output_row = []
         for i in range(0, len(time)):
-            output_row.append([label[i+1], range1[i+4], mod_c1[i+4], mod_cm1[i+4], mod_c2[i+4],
-                               mod_cm2[i+4], mod_c3[i+4], mod_cm3[i+4], mod_c4[i+4], mod_cm4[i+4]])
+            j = math.ceil(len(time)/mod)
+            output_row.append([label[i+1], range1[i+j], mod_c1[i+j], mod_cm1[i+j], mod_c2[i+j],
+                               mod_cm2[i+j], mod_c3[i+j], mod_cm3[i+j], mod_c4[i+j], mod_cm4[i+j]])
 
         # Writing the remaining values to the output file
         # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
@@ -698,6 +714,7 @@ def octant_transition_count(sheet, inputfile, mod=5000):
         exit()
 
 # Function - 4 to write the longest subsequence count with range
+
 
 def octant_longest_subsequence_count_with_range(sheet, inputfile):
 
@@ -787,6 +804,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
                 count[7] += 1
 
     try:
+        # Defining thin_border
         bd = Side(border_style='thin')
         thin_border = Border(left=bd, top=bd, right=bd, bottom=bd)
 
@@ -810,6 +828,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
         # Declaring a list to store the octants
         octant_ids = ["+1", "-1", "+2", "-2", "+3", "-3", "+4", "-4"]
         octant_ids2 = []  # Declaring octant_ids2 list for a different column with "Time" label
+
         # Loop to check the maximum consecutive subsequence as well as the count or repetition of the subsequence
         # Iterating through octant_ids
         for j in octant_ids:
@@ -825,6 +844,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
                     if previous_count > max_count:
                         max_count = previous_count
                     previous_count = 0
+
             # Next I am declaring variables to show the count of repetition of the subsequence in the octant list
             range_count = 0
             count_check = 0
@@ -832,6 +852,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
             from_range = []
             count_range = []
             to_range = []
+
             # Again iterating through the octant list to find the count
             for i in range(len(time)):
                 if octant[i] != j:
@@ -858,7 +879,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
             count_sub_len_range.append("To")
             count_sub_len_range.extend(to_range)
 
-        flag=len(count_sub_len_range)
+        flag = len(count_sub_len_range)
         # Appending blank spaces
         for i in range(8, len(time)):
             octant_ids.append(" ")
@@ -888,7 +909,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
         for i in range(19, 22):
             for j in range(3, 12):
                 cell = 'A'+chr(i+64)+str(j)
-                sheet[cell].border = thin_border        
+                sheet[cell].border = thin_border
         for i in range(23, 26):
             for j in range(3, flag+4):
                 cell = 'A'+chr(i+64)+str(j)
@@ -898,14 +919,31 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
         print("Something went wrong while writing to octant_output.csv")
         exit()
 
+# Function - 5 for octant analysis
+
 
 def octant_analysis(mod=5000):
+    # Changing the current directory to input
     os.chdir("input")
+
+    # Iterating through the files in input folder
     for inputfile in os.listdir():
-        if inputfile=="3.4.xlsx":
+
+        # Handling an ambiguous case
+        if inputfile == "3.4.xlsx":
             continue
         wb = Workbook()
+
+        # Handling another ambiguous case with Sheet2 as active sheet
+        if inputfile == "surface.xlsx":
+            ss = openpyxl.load_workbook(inputfile)
+            if 'Sheet2' in ss:
+                ss_sheet = ss['Sheet2']
+                ss_sheet.title = 'Sheet1'
+            ss.save(inputfile)
         sheet = wb.active
+
+        # Calling the respective functions
         octant_range_names(sheet, inputfile, mod)
         octant_transition_count(sheet, inputfile, mod)
         octant_longest_subsequence_count_with_range(sheet, inputfile)
@@ -922,13 +960,20 @@ def octant_analysis(mod=5000):
                     pass
             adjusted_width = (max_length+1)
             sheet.column_dimensions[column].width = adjusted_width
-        parent=os.path.dirname(os.getcwd())
-        output_path=parent.replace("\\","/")+"/output/"+str(inputfile[:3])+" cm_vel_octant_analysis_mod_"+str(mod)+".xlsx"
+
+        # Parent Directory - tut07
+        parent = os.path.dirname(os.getcwd())
+
+        # Defining the path to output the files
+        inputfile = inputfile[:-5]
+        output_path = parent.replace(
+            "\\", "/")+"/output/"+str(inputfile)+"_vel_octant_analysis_mod_"+str(mod)+".xlsx"
         # Saving the workbook.
         wb.save(output_path)
         wb.close()  # Closing the workbook.
 
 
+# Version Check
 ver = python_version()
 
 if ver == "3.8.10":
@@ -936,11 +981,11 @@ if ver == "3.8.10":
 else:
     print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
-
+# Main Code - Calling octant_analysis function
 mod = 5000
 octant_analysis(mod)
 
 
-# This shall be the last lines of the code.
+# Time Duration of the Code.
 end_time = datetime.now()
 print('Duration of Program Execution: {}'.format(end_time - start_time))
