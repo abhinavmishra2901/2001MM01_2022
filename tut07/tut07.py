@@ -75,9 +75,9 @@ def octant_range_names(sheet, inputfile, mod=5000):
             w.append(float(row['W']))
 
         # Calculating the average of U, V, W
-        u_avg = sum(u)/len(u)
-        v_avg = sum(v)/len(v)
-        w_avg = sum(w)/len(w)
+        u_avg = round(sum(u)/len(u),3)
+        v_avg = round(sum(v)/len(v),3)
+        w_avg = round(sum(w)/len(w),3)
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
@@ -388,9 +388,9 @@ def octant_transition_count(sheet, inputfile, mod=5000):
             w.append(float(row['W']))
 
         # Calculating the average of U, V, W
-        u_avg = sum(u)/len(u)
-        v_avg = sum(v)/len(v)
-        w_avg = sum(w)/len(w)
+        u_avg = round(sum(u)/len(u),3)
+        v_avg = round(sum(v)/len(v),3)
+        w_avg = round(sum(w)/len(w),3)
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
@@ -641,6 +641,194 @@ def octant_transition_count(sheet, inputfile, mod=5000):
         print("Something went wrong while writing to octant_output.csv")
         exit()
 
+# Function - 4 to write the longest subsequence count with range
+
+
+def octant_longest_subsequence_count_with_range(sheet, inputfile):
+
+    # Declaring the lists to store the values
+    time = []
+    u = []
+    v = []
+    w = []
+    u_prime = []
+    v_prime = []
+    w_prime = []
+    octant = []
+
+    # Opening the input_octant_transition_identify.xlsx file in read mode
+    try:
+        reader = openpyxl_dictreader.DictReader(
+            inputfile, "Sheet1")
+
+        # Storing the values of each key in the corresponding lists
+        for row in reader:
+            time.append(float(row['T']))
+            u.append(float(row['U']))
+            v.append(float(row['V']))
+            w.append(float(row['W']))
+
+        # Calculating the average of U, V, W
+        u_avg = round(round(sum(u)/len(u),3),3)
+        v_avg = round(round(sum(v)/len(v),3),3)
+        w_avg = round(round(sum(w)/len(w),3),3)
+
+        # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
+        for u_value in u:
+            u_prime.append(u_value-u_avg)
+        for v_value in v:
+            v_prime.append(v_value-v_avg)
+        for w_value in w:
+            w_prime.append(w_value-w_avg)
+
+    # FileNotFound Error
+    except FileNotFoundError:
+        print("Input File not found!")
+        exit()
+
+    # Other errors if any
+    except:
+        print("Some error occured while reading the input file")
+        exit()
+
+    # Declaring List to store the count of each Octant ID
+    count = [0]*8
+    long_sub_len = []
+    count_sub_len = []
+
+    # Declaring Lists to store the count of ranges
+    long_sub_len_range = []
+    count_sub_len_range = []
+
+    # Tagging the octants by help of the video provided in the assignment
+    for i in range(0, len(time)):
+        if (u_prime[i] >= 0 and v_prime[i] >= 0):
+            if w_prime[i] >= 0:
+                octant.append("+1")
+                count[0] += 1
+            else:
+                octant.append("-1")
+                count[1] += 1
+        if (u_prime[i] < 0 and v_prime[i] >= 0):
+            if w_prime[i] >= 0:
+                octant.append("+2")
+                count[2] += 1
+            else:
+                octant.append("-2")
+                count[3] += 1
+        if (u_prime[i] < 0 and v_prime[i] < 0):
+            if w_prime[i] >= 0:
+                octant.append("+3")
+                count[4] += 1
+            else:
+                octant.append("-3")
+                count[5] += 1
+        if (u_prime[i] >= 0 and v_prime[i] < 0):
+            if w_prime[i] >= 0:
+                octant.append("+4")
+                count[6] += 1
+            else:
+                octant.append("-4")
+                count[7] += 1
+
+    try:
+        # Header Labels
+        sheet['AS1'] = "Longest Subsequence Length"
+        sheet['AW1'] = "Longest Subsequence Length with Range"
+
+        # Header line
+        header_line = ["Octant ##", "Longest Subsequence Length", "Count",
+                       "", "Octant ###", "Longest Subsequence Length", "Count"]
+
+        # Loop to print the header line
+        for i in range(19, 26):
+            # The Cell Address. Converting integer to the corresponding character by ascii conversion
+            cell = 'A'+chr(i+64)+'3'
+            sheet[cell] = header_line[i-19]
+
+        # Declaring a list to store the output of lines/rows
+        output_row = []
+
+        # Declaring a list to store the octants
+        octant_ids = ["+1", "-1", "+2", "-2", "+3", "-3", "+4", "-4"]
+        octant_ids2 = []  # Declaring octant_ids2 list for a different column with "Time" label
+        # Loop to check the maximum consecutive subsequence as well as the count or repetition of the subsequence
+        # Iterating through octant_ids
+        for j in octant_ids:
+            octant_ids2.append(j)
+            # Declaring variables to show the current maximum length of the subsequence and the previous maximum length of the subsequence
+            previous_count = 0
+            max_count = 0
+            # Iterating through the octant list and checking the maximum length of a subsequence
+            for i in range(len(time)):
+                if octant[i] == j:
+                    previous_count += 1
+                else:
+                    if previous_count > max_count:
+                        max_count = previous_count
+                    previous_count = 0
+            # Next I am declaring variables to show the count of repetition of the subsequence in the octant list
+            range_count = 0
+            count_check = 0
+            # Also declaring variables to store the from, to and count range of longest subsequence
+            from_range = []
+            count_range = []
+            to_range = []
+            # Again iterating through the octant list to find the count
+            for i in range(len(time)):
+                if octant[i] != j:
+                    count_check = 0
+                else:
+                    count_check += 1
+                    if count_check == max_count:
+                        range_count += 1
+                        count_check = 0
+                        count_range.append("")
+                        # Appending the "From" and "To" time value to the from_range and to_range lists
+                        from_range.append(time[i-max_count+1])
+                        to_range.append(time[i])
+
+            # Appending the values to respective lists so that the particular column can be printed
+            long_sub_len.append(max_count)
+            long_sub_len_range.append(max_count)
+            octant_ids2.append("Time")
+            octant_ids2.extend(count_range)
+            long_sub_len_range.append("From")
+            long_sub_len_range.extend(from_range)
+            count_sub_len.append(range_count)
+            count_sub_len_range.append(range_count)
+            count_sub_len_range.append("To")
+            count_sub_len_range.extend(to_range)
+
+        # Appending blank spaces
+        for i in range(8, len(time)):
+            octant_ids.append(" ")
+            octant_ids2.append(" ")
+            long_sub_len.append("")
+            long_sub_len_range.append(" ")
+            count_sub_len.append("")
+            count_sub_len_range.append(" ")
+
+        # Running a loop to store the values to an output_row list
+        for i in range(0, len(time)):
+            if i == 0:
+                output_row.append([octant_ids[0], long_sub_len[0], count_sub_len[0],
+                                  "", octant_ids[0], long_sub_len_range[0], count_sub_len_range[0]])
+            else:
+                output_row.append([octant_ids[i], long_sub_len[i], count_sub_len[i],
+                                  "", octant_ids2[i], long_sub_len_range[i], count_sub_len_range[i]])
+
+        # Writing the values to the output_octant_transition_identify.xlsx file
+        # Here i is the range of columns and j is the range of rows. By combinations of characters we are storing the data to the corresponding cells.
+        for i in range(19, 26):
+            for j in range(4, len(time)):
+                cell = 'A'+chr(i+64)+str(j)
+                sheet[cell] = output_row[j-4][i-19]
+
+    except:
+        print("Something went wrong while writing to octant_output.csv")
+        exit()
+
 
 def octant_analysis(mod=5000):
     inputfile = "input/2.0.xlsx"
@@ -648,6 +836,7 @@ def octant_analysis(mod=5000):
     sheet = wb.active
     octant_range_names(sheet, inputfile, mod)
     octant_transition_count(sheet, inputfile, mod)
+    octant_longest_subsequence_count_with_range(sheet, inputfile)
     # Saving the workbook.
     wb.save("Output_File.xlsx")
     wb.close()  # Closing the workbook.
