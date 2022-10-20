@@ -1,4 +1,4 @@
-# Assignment 06 CS384 -     Octant Batch Processing andMerging of Assignment Tut01-05.
+# Assignment 07 CS384 -     Octant Batch Processing andMerging of Assignment Tut01-05.
 # By Abhinav Mishra - 2001MM01
 
 # Libraries
@@ -92,11 +92,11 @@ def octant_range_names(sheet, inputfile, mod):
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
-            u_prime.append(u_value-u_avg)
+            u_prime.append(round(u_value-u_avg, 3))
         for v_value in v:
-            v_prime.append(v_value-v_avg)
+            v_prime.append(round(v_value-v_avg, 3))
         for w_value in w:
-            w_prime.append(w_value-w_avg)
+            w_prime.append(round(w_value-w_avg, 3))
 
     # FileNotFound Error
     except FileNotFoundError:
@@ -445,11 +445,11 @@ def octant_transition_count(sheet, inputfile, mod):
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
-            u_prime.append(u_value-u_avg)
+            u_prime.append(round(u_value-u_avg, 3))
         for v_value in v:
-            v_prime.append(v_value-v_avg)
+            v_prime.append(round(v_value-v_avg, 3))
         for w_value in w:
-            w_prime.append(w_value-w_avg)
+            w_prime.append(round(w_value-w_avg, 3))
     # FileNotFound Error
     except FileNotFoundError:
         print("Input File not found!")
@@ -557,6 +557,7 @@ def octant_transition_count(sheet, inputfile, mod):
     mod_cm4.extend((" ", " ",  "-4"))
 
     # A simple 2D loop to check the transitions. I am using two loops and then adding the count to overall_transition list
+    highest_highlights = []
     for j in range(8):
         octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
         overall_transition = [0]*8
@@ -581,6 +582,16 @@ def octant_transition_count(sheet, inputfile, mod):
 
         # overall_transition_list is the list to store the 8 lists we obtained in the above loop
         overall_transition_list.append(overall_transition)
+
+    highest_highlight = []
+    highlight_cell_lists = []
+    for i in range(len(overall_transition_list)):
+        highlight_cell_list = []
+        for otl in overall_transition_list:
+            highlight_cell_list.append(otl[i])
+        highlight_cell_lists.append(highlight_cell_list)
+        highest_highlight.append(max(highlight_cell_list))
+    highest_highlights.append(highest_highlight)
 
     # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
     for i in range(8):
@@ -643,6 +654,16 @@ def octant_transition_count(sheet, inputfile, mod):
         # overall_transition_list is the list to store the 8 lists we obtained in the above loop
             overall_transition_list.append(overall_transition)
 
+        highest_highlight = []
+        highlight_cell_lists = []
+        for i in range(len(overall_transition_list)):
+            highlight_cell_list = []
+            for otl in overall_transition_list:
+                highlight_cell_list.append(otl[i])
+            highlight_cell_lists.append(highlight_cell_list)
+            highest_highlight.append(max(highlight_cell_list))
+        highest_highlights.append(highest_highlight)
+
     # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
         for i in range(8):
             mod_c1.append(overall_transition_list[0][i])
@@ -657,6 +678,7 @@ def octant_transition_count(sheet, inputfile, mod):
         y = y+mod
         # Clearing the lists for the iteration of next range
         overall_transition_list.clear()
+    # print(highest_highlights)
 
     # Appending the remaining length of the lists with a blank string for convenience in later steps
     for x in range(int(len(time)/mod)+2, len(time)):
@@ -709,6 +731,27 @@ def octant_transition_count(sheet, inputfile, mod):
             start_row += 14
             end_row += 14
 
+        # Loop for Highlighting the Highest Transition Values
+        start_row = 4
+        end_row = 12
+        check = 0
+        while end_row < len(time):
+            for i in range(start_row, end_row):
+                row_check=0
+                for j in range(len(highest_highlights)): 
+                    for k in range(10, 18):
+                        cell = 'A'+chr(k+64)+str(i)
+                        if row_check==0:
+                            if sheet[cell].value == highest_highlights[j][check]:
+                                highlight = PatternFill(
+                                    start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+                                sheet[cell].fill = highlight
+                                check += 1
+                                row_check=1
+                                if check > 7:
+                                    check = 0
+            start_row += 14
+            end_row += 14
     except:
         print("Something went wrong while writing to octant_output.csv")
         exit()
@@ -747,11 +790,11 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
-            u_prime.append(u_value-u_avg)
+            u_prime.append(round(u_value-u_avg, 3))
         for v_value in v:
-            v_prime.append(v_value-v_avg)
+            v_prime.append(round(v_value-v_avg, 3))
         for w_value in w:
-            w_prime.append(w_value-w_avg)
+            w_prime.append(round(w_value-w_avg, 3))
 
     # FileNotFound Error
     except FileNotFoundError:
@@ -929,9 +972,6 @@ def octant_analysis(mod=5000):
     # Iterating through the files in input folder
     for inputfile in os.listdir():
 
-        # Handling an ambiguous case
-        if inputfile == "3.4.xlsx":
-            continue
         wb = Workbook()
 
         # Handling another ambiguous case with Sheet2 as active sheet
