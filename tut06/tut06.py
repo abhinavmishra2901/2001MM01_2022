@@ -54,7 +54,6 @@ def email(sender_address, sender_pass):
         # The body and the attachments for the mail
         message.attach(MIMEText(mail_content, 'plain'))
         os.chdir(os.getcwd().replace('\\', "/")+"/output/")
-        # print(os.getcwd())
         attach_file_name = 'attendance_report_consolidated.csv'
         # Open the file as binary mode
         attach_file = open(attach_file_name, 'rb')
@@ -137,15 +136,17 @@ def attendance_report():
         duplicate_element = [0, 0, 0, 0]
         for j in range(len(student_timestamps[i])):
             datestamp = student_timestamps[i][j][:10]
-            if datestamp not in unique:
-                unique.append(datestamp)
-            elif datestamp in unique:
-                duplicate_element[0] = datestamp
-                duplicate_element[1] = (reg_students[i][:8])
-                duplicate_element[2] = (reg_students[i][9:])
-                duplicate_element[3] += (student_datestamps[i].count(datestamp))
-                duplicate.append(duplicate_element)
-                duplicate_element = [0, 0, 0, 0]
+            if student_timestamps[i][j][11:13]=='14':
+                if datestamp not in unique:
+                    unique.append(datestamp)
+                elif datestamp in unique:
+                    # print(student_timestamps[i][j][11:13])
+                    duplicate_element[0] = datestamp
+                    duplicate_element[1] = (reg_students[i][:8])
+                    duplicate_element[2] = (reg_students[i][9:])
+                    duplicate_element[3] += (student_datestamps[i].count(datestamp))
+                    duplicate.append(duplicate_element)
+                    duplicate_element = [0, 0, 0, 0]
 
     # If the student has marked more than 2 attendance on the single day, the sublist may repeat.
     # To avoid this, we remove repeating sub-lists from the duplicate list.
@@ -199,65 +200,65 @@ def attendance_report():
         individual_row.append(percentage_count)
         final_rows.append(individual_row)
 
-    # try:
+    try:
 
-    # OUTPUT - 1
+        # OUTPUT - 1
 
-    # Header File
-    header_line = [
-        "Roll,Name,total_lecture_taken,attendance_count_actual,attendance_count_fake,attendance_count_absent,Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal\n"]
-    for row in final_rows:
-        # Creating individual roll number files
-        roll_output = open("output/"+row[0]+".csv", 'w')
-        roll_output.writelines(header_line)
-        roll_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
-            row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
-        roll_output.close()  # Closing the output file
+        # Header File
+        header_line = [
+            "Roll,Name,total_lecture_taken,attendance_count_actual,attendance_count_fake,attendance_count_absent,Percentage (attendance_count_actual/total_lecture_taken) 2 digit decimal\n"]
+        for row in final_rows:
+            # Creating individual roll number files
+            roll_output = open("output/"+row[0]+".csv", 'w')
+            roll_output.writelines(header_line)
+            roll_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
+                row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
+            roll_output.close()  # Closing the output file
 
-    # OUTPUT - 2
+        # OUTPUT - 2
 
-    # Creating Consolidated Attendance Report
-    cons_output = open("output/attendance_report_consolidated.csv", 'w')
-    cons_output.writelines(header_line)
-    for row in final_rows:
-        cons_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
-            row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
-    cons_output.close()
+        # Creating Consolidated Attendance Report
+        cons_output = open("output/attendance_report_consolidated.csv", 'w')
+        cons_output.writelines(header_line)
+        for row in final_rows:
+            cons_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
+                row[3]), ",", str(row[4]), ",", str(row[5]), ",", str(row[6]), "\n"))
+        cons_output.close()
 
-    # OUTPUT - 4
+        # OUTPUT - 4
 
-    # Creating Duplicate Attendance Report
-    dupl_output = open("output/attendance_report_duplicate.csv", 'w')
-    header_line = [
-        "Timestamp,Roll No., Name, Total Count of attendance on that day\n"]
-    dupl_output.writelines(header_line)
-    for row in duplicate:
-        dupl_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
-            row[3]), "\n"))
-    dupl_output.close()
+        # Creating Duplicate Attendance Report
+        dupl_output = open("output/attendance_report_duplicate.csv", 'w')
+        header_line = [
+            "Timestamp,Roll No., Name, Total Count of attendance on that day\n"]
+        dupl_output.writelines(header_line)
+        for row in duplicate:
+            dupl_output.writelines((str(row[0]), ",", str(row[1]), ",", str(row[2]), ",", str(
+                row[3]), "\n"))
+        dupl_output.close()
 
-    # OUTPUT - 3
+        # OUTPUT - 3
 
-    # Asking the User for the option to mail the consolidated Attendance Report
-    x_check = 0
-    while (x_check == 0):
-        x = input(
-            "Do you wish to email the consolidated Attendance Report to cs3842022@gmail.com? (YES/NO)")
-        if x.upper() == "YES":
-            emailid = input("Enter Your Email ID:")
-            password = input("Enter Your Password:")
-            email(emailid, password)
-            x_check = 1
+        # Asking the User for the option to mail the consolidated Attendance Report
+        x_check = 0
+        while (x_check == 0):
+            x = input(
+                "Do you wish to email the consolidated Attendance Report to cs3842022@gmail.com? (YES/NO)")
+            if x.upper() == "YES":
+                emailid = input("Enter Your Email ID:")
+                password = input("Enter Your Password:")
+                email(emailid, password)
+                x_check = 1
 
-        elif x.upper() == "NO":
-            print("Ok!")
-            x_check = 1
-        else:
-            print("Please enter either YES or NO!")
+            elif x.upper() == "NO":
+                print("Ok!")
+                x_check = 1
+            else:
+                print("Please enter either YES or NO!")
 
-    # except:
-    #     print("Something went wrong while writing to octant_output.csv")
-    #     exit()
+    except:
+        print("Something went wrong while writing to octant_output.csv")
+        exit()
 
 
 # Version Check
