@@ -1,15 +1,13 @@
 # Assignment 08 - Cricket Scorecard Generator
 # By Abhinav Mishra - 2001MM01
 
+# Libraries
 import re
 import math
 from platform import python_version
 from datetime import datetime
 import os
 start_time = datetime.now()
-
-# Help
-
 
 # Code
 os.system("cls")
@@ -18,6 +16,9 @@ os.system("cls")
 
 
 def scorecard():
+    # Defining a Fall of Wickets list
+    fallofwickets = []
+
     # Defining a pakistan inning list
     pakistan_inn = []
 
@@ -87,6 +88,9 @@ def scorecard():
             elif run[2:5] == 'out':
                 ballwise_stats.append('out')
                 wickets += 1
+                # Updating the Fall of Wickets information
+                fallofwickets.append(
+                    "{}-{} ({}, {})".format(math.ceil(runs/2), math.ceil(wickets/2), batsman, line[0:4]))
                 out_reason.append(run[6:])
             # Appending the ballwise lists to the master list of pakistan_inn
             pakistan_inn.append(ballwise_stats)
@@ -96,6 +100,7 @@ def scorecard():
         wickets = math.ceil(wickets/2)
 
         # Deleting the double data due to space between two lines
+        del fallofwickets[1::2]
         del pakistan_inn[1::2]
         del out_reason[1::2]
 
@@ -151,12 +156,63 @@ def scorecard():
                         pakistan_batting_runs[index]*100/pakistan_batting_balls[index], 2)
             index += 1
 
+        # Defining a bowling order based on the given information
+        india_bowling = []
+        bowling_order = []
+        for i in pakistan_inn:
+            india_bowling.append(i[1])
+        for i in india_bowling:
+            if i.strip() not in bowling_order:
+                bowling_order.append(i)
+        india_bowling = bowling_order.copy()
+
+        # Defining the list to store various information for each bowler
+        india_bowling_overs = [0]*len(bowling_order)
+        india_bowling_maidens = [0]*len(bowling_order)
+        india_bowling_runs = [0]*len(bowling_order)
+        india_bowling_wickets = [0]*len(bowling_order)
+        india_bowling_NB = [0]*len(bowling_order)
+        india_bowling_WD = [0]*len(bowling_order)
+        india_bowling_ECO = [0]*len(bowling_order)
+        # Updating the information by calculating it for each batsman
+        index = 0
+        for i in india_bowling:
+            maiden_check = 0
+            for j in pakistan_inn:
+                if j[1].strip() == i:
+                    india_bowling_overs[index] += 1
+                    if j[3] != 'out' and j[3] != 'wide' and j[3] != 'byes':
+                        india_bowling_runs[index] += int(j[3])
+                    if j[3] == 'wide':
+                        india_bowling_runs[index] += 1
+                        india_bowling_WD[index] += 1
+                        india_bowling_overs[index] -= 1
+                    if j[3] == 'byes':
+                        pass
+                    if j[3] == 'leg byes':
+                        pass
+                    if j[3] == 'out':
+                        india_bowling_wickets[index] += 1
+                    if j[3] == 0:
+                        maiden_check += 1
+                    else:
+                        maiden_check = 0
+                    if maiden_check == 6:
+                        india_bowling_maidens += 1
+
+            # Calculating Economy = Number of runs/Number of overs and overs from the balls count
+            india_bowling_ECO[index] = round(
+                india_bowling_runs[index]*6/india_bowling_overs[index], 1)
+            india_bowling_overs[index] = ((india_bowling_overs[index]/6)-math.floor(
+                india_bowling_overs[index]/6))*0.6 + math.floor(india_bowling_overs[index]/6)
+            index += 1
+
     # Writing the Information to Scorecard.txt
     with open("Scorecard.txt", 'w') as scorecard:
         scorecard.writelines(
             f"{'Pakistan Innings' : <25}{'' : <35}{'' : ^10}{'' : ^10}{'' : ^10}{'' : ^10}{str(runs)+'-'+str(wickets)+'('+pakistan_inn[-1][0]+')' : ^10}\n")
         scorecard.writelines(
-            f"{'Batter' : <25}{'' : <35}{'R' : ^10}{'B' : ^10}{'4s' : ^10}{'6s' : ^10}{'SR' : >10}\n")
+            f"\n{'Batter' : <25}{'' : <35}{'R' : ^10}{'B' : ^10}{'4s' : ^10}{'6s' : ^10}{'SR' : >10}\n")
         for i in range(11):
             for j in range(len(out_batsman)):
                 if pakistan_batting[i] not in out_batsman:
@@ -166,6 +222,16 @@ def scorecard():
                 elif out_batsman[j] == pakistan_batting[i]:
                     scorecard.writelines(
                         f"{pakistan_batting[i] : <25}{out_reason[j] : <35}{pakistan_batting_runs[i] : ^10}{pakistan_batting_balls[i] : ^10}{pakistan_batting_fours[i] : ^10}{pakistan_batting_sixes[i] : ^10}{pakistan_batting_SR[i] : >10}\n")
+        scorecard.writelines(f"\n{'Fall of Wickets':<25}\n")
+        fow = fallofwickets[0]
+        for i in range(1, len(fallofwickets)):
+            fow += ", " + fallofwickets[i]
+        scorecard.writelines(f"{fow:<25}\n")
+        scorecard.writelines(
+            f"\n{'Bowler' : <40}{'O' : ^10}{'M' : ^10}{'R' : ^10}{'W' : ^10}{'NB' : ^10}{'WD' : ^10}{'ECO' : >10}\n")
+        for i in range(len(bowling_order)):
+            scorecard.writelines(
+                f"{bowling_order[i] : <40}{india_bowling_overs[i] : ^10}{india_bowling_maidens[i] : ^10}{india_bowling_runs[i] : ^10}{india_bowling_wickets[i] : ^10}{india_bowling_NB[i] : ^10}{india_bowling_WD[i] : ^10}{india_bowling_ECO[i] : >10}\n\n")
 
 
 # Version Check

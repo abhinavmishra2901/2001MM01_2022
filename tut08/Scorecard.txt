@@ -1,4 +1,5 @@
 Pakistan Innings                                                                                    147-10(19.5)
+
 Batter                                                          R         B         4s        6s            SR
 Rizwan                   c Avesh Khan b  Hardik Pandya          43        42        4         1         102.38
 Babar Azam               c Arshdeep Singh b Bhuvneshwar         10        9         2         0         111.11
@@ -11,3 +12,14 @@ Mohammad Nawaz           c Karthik b  Arshdeep Singh            1         3     
 Haris Rauf               Not Out                                13        7         2         0         185.71
 Naseem Shah              lbw b Bhuvneshwar                      0         1         0         0            0.0
 Dahani                   b Arshdeep Singh                       16        6         0         2         266.67
+
+Fall of Wickets          
+15-1 (Babar Azam, 2.4 ), 42-2 (Fakhar Zaman, 5.5 ), 87-3 (Iftikhar Ahmed, 12.1), 96-4 (Rizwan, 14.1), 97-5 (Khushdil, 14.3), 112-6 (Asif Ali, 16.3), 114-7 (Mohammad Nawaz, 17.1), 128-8 (Shadab Khan, 18.2), 128-9 (Naseem Shah, 18.3), 147-10 (Dahani, 19.5)
+
+Bowler                                      O         M         R         W         NB        WD           ECO
+Bhuvneshwar                                4.0        0         26        4         0         0            6.5
+Arshdeep Singh                             3.5        0         33        2         0         2            8.6
+Hardik Pandya                              4.0        0         25        3         0         2            6.2
+Avesh Khan                                 2.0        0         19        1         0         0            9.5
+Chahal                                     4.0        0         32        0         0         0            8.0
+Jadeja                                     2.0        0         11        0         0         0            5.5
