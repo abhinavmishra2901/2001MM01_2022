@@ -1001,7 +1001,7 @@ def proj_octant_gui():
                 mod = int(st.text_input(label="Mod Value",
                                         placeholder="Enter a mod value for computation", value="5000"))
             except ValueError:
-                st.write("Please enter Valid Input in the mod field")
+                st.write("Please enter Valid Input in the Mod Value field")
                 st.stop()
 
         elif mode == 'Multiple Files Processing':
@@ -1019,7 +1019,7 @@ def proj_octant_gui():
         # Compute button to carry out the computation
         compute = st.button(label="Compute")
 
-        # Parent Directory - tut07
+        # Parent Directory
         parent = ""
 
         # If the Output directory is not present, make an output directory called octant_analysis_output in Downloads folder of the USER
@@ -1051,8 +1051,10 @@ def proj_octant_gui():
                 os.chdir(multiplefilespath)
 
                 # Iterating through the files in the USER's directory
+                count=0
                 for inputfile in os.listdir():
                     if os.path.isfile(inputfile):
+                        count=1
                         if inputfile.endswith(".xls") or inputfile.endswith(".xlsx"):
                             wb = Workbook()
                             sheet = wb.active
@@ -1097,6 +1099,9 @@ def proj_octant_gui():
                             continue
                     else:
                         continue
+                if count==0:
+                    st.write("No Excel File(s) exists in the specified path!")
+                    st.stop()
 
             # If both the fields are not filled, a message shows up to the USER
             elif uploaded_file == None and multiplefilespath == '':
