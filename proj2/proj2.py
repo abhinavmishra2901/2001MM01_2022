@@ -3,14 +3,17 @@
 
 # Libraries
 
-import math
-from openpyxl.styles.borders import Border, Side
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Border
-import openpyxl_dictreader
-import os
-from platform import python_version
 from datetime import datetime
+
+import os
+import openpyxl_dictreader
+import openpyxl
+from openpyxl.styles import Color, PatternFill, Font, Border
+from openpyxl.styles import colors
+from openpyxl.cell import Cell
+from openpyxl import Workbook
+from openpyxl.styles.borders import Border, Side, BORDER_THIN
+import math
 import streamlit as st
 import shutil
 
@@ -29,7 +32,6 @@ start_time = datetime.now()
 
 
 def octant_rank_count(count):
-
     # Overall Rank
     overall_rank = []
     # Creating a copy of the attribute list
@@ -92,21 +94,21 @@ def octant_range_names(sheet, inputfile, mod):
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
-            u_prime.append(u_value-u_avg)
+            u_prime.append(round(u_value-u_avg, 3))
         for v_value in v:
-            v_prime.append(v_value-v_avg)
+            v_prime.append(round(v_value-v_avg, 3))
         for w_value in w:
-            w_prime.append(w_value-w_avg)
+            w_prime.append(round(w_value-w_avg, 3))
 
     # FileNotFound Error
     except FileNotFoundError:
         st.markdown("Input File not available!")
-        exit()
+        st.stop()
 
     # Other errors if any
     except:
         st.markdown("Some error occured while reading the input file")
-        exit()
+        st.stop()
 
     # Declaring List to store the count of each Octant ID
     count = [0]*8
@@ -404,12 +406,12 @@ def octant_range_names(sheet, inputfile, mod):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell].border = thin_border
         for i in range(3, 6):
-            for j in range(3+int(len(time)/mod)+6, 3+int(len(time)/mod)+4+11):
+            for j in range(3+int(len(time)/mod)+5, 3+int(len(time)/mod)+4+11):
                 cell = 'A'+chr(i+64)+str(j)
                 sheet[cell].border = thin_border
     except:
         print("Something went wrong while writing to octant_output.csv")
-        exit()
+        st.stop()
 
 # Function - 3 to write the transition count
 
@@ -445,19 +447,19 @@ def octant_transition_count(sheet, inputfile, mod):
 
         # Data Preprocessing - Calculating the difference between the velocities and their respective average values and storing in the respective lists.
         for u_value in u:
-            u_prime.append(u_value-u_avg)
+            u_prime.append(round(u_value-u_avg, 3))
         for v_value in v:
-            v_prime.append(v_value-v_avg)
+            v_prime.append(round(v_value-v_avg, 3))
         for w_value in w:
-            w_prime.append(w_value-w_avg)
+            w_prime.append(round(w_value-w_avg, 3))
     # FileNotFound Error
     except FileNotFoundError:
         st.markdown("Input File not found!")
-        exit()
+        st.stop()
     # Other errors if any
     except:
         st.markdown("Some error occured while reading the input file")
-        exit()
+        st.stop()
 
     # Declaring List to store the count of each Octant ID
     count = [0]*8
@@ -557,6 +559,7 @@ def octant_transition_count(sheet, inputfile, mod):
     mod_cm4.extend((" ", " ",  "-4"))
 
     # A simple 2D loop to check the transitions. I am using two loops and then adding the count to overall_transition list
+    highest_highlights = []
     for j in range(8):
         octant_list = [1, -1, 2, -2, 3, -3, 4, -4]
         overall_transition = [0]*8
@@ -581,6 +584,16 @@ def octant_transition_count(sheet, inputfile, mod):
 
         # overall_transition_list is the list to store the 8 lists we obtained in the above loop
         overall_transition_list.append(overall_transition)
+
+    highest_highlight = []
+    highlight_cell_lists = []
+    for i in range(len(overall_transition_list)):
+        highlight_cell_list = []
+        for otl in overall_transition_list:
+            highlight_cell_list.append(otl[i])
+        highlight_cell_lists.append(highlight_cell_list)
+        highest_highlight.append(max(highlight_cell_list))
+    highest_highlights.append(highest_highlight)
 
     # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
     for i in range(8):
@@ -642,6 +655,16 @@ def octant_transition_count(sheet, inputfile, mod):
 
         # overall_transition_list is the list to store the 8 lists we obtained in the above loop
             overall_transition_list.append(overall_transition)
+
+        highest_highlight = []
+        highlight_cell_lists = []
+        for i in range(len(overall_transition_list)):
+            highlight_cell_list = []
+            for otl in overall_transition_list:
+                highlight_cell_list.append(otl[i])
+            highlight_cell_lists.append(highlight_cell_list)
+            highest_highlight.append(max(highlight_cell_list))
+        highest_highlights.append(highest_highlight)
 
     # To print the data to the excel file, we append the overall_transition_list's values to the respective columns using a loop
         for i in range(8):
@@ -708,10 +731,30 @@ def octant_transition_count(sheet, inputfile, mod):
                     sheet[cell].border = thin_border
             start_row += 14
             end_row += 14
-
+        # Loop for Highlighting the Highest Transition Values
+        start_row = 4
+        end_row = 12
+        check = 0
+        while end_row < len(time):
+            for i in range(start_row, end_row):
+                row_check = 0
+                for j in range(len(highest_highlights)):
+                    for k in range(10, 18):
+                        cell = 'A'+chr(k+64)+str(i)
+                        if row_check == 0:
+                            if sheet[cell].value == highest_highlights[j][check]:
+                                highlight = PatternFill(
+                                    start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+                                sheet[cell].fill = highlight
+                                check += 1
+                                row_check = 1
+                                if check > 7:
+                                    check = 0
+            start_row += 14
+            end_row += 14
     except:
         print("Something went wrong while writing to octant_output.csv")
-        exit()
+        st.stop()
 
 # Function - 4 to write the longest subsequence count with range
 
@@ -756,12 +799,12 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
     # FileNotFound Error
     except FileNotFoundError:
         st.markdown("Input File not found!")
-        exit()
+        st.stop()
 
     # Other errors if any
     except:
         st.markdown("Some error occured while reading the input file")
-        exit()
+        st.stop()
 
     # Declaring List to store the count of each Octant ID
     count = [0]*8
@@ -917,7 +960,7 @@ def octant_longest_subsequence_count_with_range(sheet, inputfile):
 
     except:
         print("Something went wrong while writing to octant_output.csv")
-        exit()
+        st.stop()
 
 
 # Function - 5 for creating a zip folder
@@ -945,17 +988,33 @@ st.markdown('By Abhinav Mishra (2001MM01) and Hardik Tiwari (2001MM15)')
 def proj_octant_gui():
     try:
 
-        # Field to upload the file
-        uploaded_file = st.file_uploader(label="Input File", type=[
-            'xlsx'], accept_multiple_files=False)
+        mode = st.radio("What type of processing do you wish to execute?", ['Single File Processing', 'Multiple Files Processing'], index=0,
+                        key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, horizontal=True, label_visibility="visible")
+        uploaded_file=None
+        multiplefilespath=''
+        if mode == 'Single File Processing':
+            # Field to upload the file
+            uploaded_file = st.file_uploader(label="Input File", type=[
+                'xlsx'], accept_multiple_files=False)
+            try:
+                # Mod Value taken as input from the USER (Default Value is 5000)
+                mod = int(st.text_input(label="Mod Value",
+                                        placeholder="Enter a mod value for computation", value="5000"))
+            except ValueError:
+                st.write("Please enter Valid Input in the mod field")
+                st.stop()
 
-        # Path of the folder, If the USER wants multiple files to be computed
-        multiplefilespath = st.text_input(label="Enter the Folder path if you want to compute multiple files:",
-                                          placeholder="Folder Path")
-
-        # Mod Value taken as input from the USER (Default Value is 5000)
-        mod = int(st.text_input(label="Mod Value",
-                                placeholder="Enter a mod value for computation", value="5000"))
+        elif mode == 'Multiple Files Processing':
+            # Path of the folder, If the USER wants multiple files to be computed
+            multiplefilespath = st.text_input(label="Enter the Folder path if you want to compute multiple files:",
+                                              placeholder="Folder Path")
+            try:
+            # Mod Value taken as input from the USER (Default Value is 5000)
+                mod = int(st.text_input(label="Mod Value",
+                                    placeholder="Enter a mod value for computation", value="5000"))
+            except ValueError:
+                st.write("Please enter Valid Input in the Mod Value field")
+                st.stop()
 
         # Compute button to carry out the computation
         compute = st.button(label="Compute")
@@ -985,7 +1044,6 @@ def proj_octant_gui():
 
         # If the compute button is clicked
         if (compute):
-
             # If a single file is not uploaded and the USER uploads the path of the directory containing the files.
             if uploaded_file == None and multiplefilespath != '':
 
@@ -994,54 +1052,60 @@ def proj_octant_gui():
 
                 # Iterating through the files in the USER's directory
                 for inputfile in os.listdir():
+                    if os.path.isfile(inputfile):
+                        if inputfile.endswith(".xls") or inputfile.endswith(".xlsx"):
+                            wb = Workbook()
+                            sheet = wb.active
 
-                    wb = Workbook()
-                    sheet = wb.active
+                            # Calling the respective functions
+                            octant_range_names(sheet, inputfile, mod)
+                            octant_transition_count(sheet, inputfile, mod)
+                            octant_longest_subsequence_count_with_range(
+                                sheet, inputfile)
 
-                    # Calling the respective functions
-                    octant_range_names(sheet, inputfile, mod)
-                    octant_transition_count(sheet, inputfile, mod)
-                    octant_longest_subsequence_count_with_range(
-                        sheet, inputfile)
+                            # Adjusting Column Widths
+                            for col in sheet.columns:
+                                max_length = 0
+                                # Get the column name
+                                column = col[0].column_letter
+                                for cell in col:
+                                    try:  # Necessary to avoid error on empty cells
+                                        if len(str(cell.value)) > max_length:
+                                            max_length = len(str(cell.value))
+                                    except:
+                                        pass
+                                adjusted_width = (max_length+1)
+                                sheet.column_dimensions[column].width = adjusted_width
 
-                    # Adjusting Column Widths
-                    for col in sheet.columns:
-                        max_length = 0
-                        column = col[0].column_letter  # Get the column name
-                        for cell in col:
-                            try:  # Necessary to avoid error on empty cells
-                                if len(str(cell.value)) > max_length:
-                                    max_length = len(str(cell.value))
-                            except:
-                                pass
-                        adjusted_width = (max_length+1)
-                        sheet.column_dimensions[column].width = adjusted_width
+                            # Name of the input file
+                            inputfile = inputfile[:-5]
 
-                    # Name of the input file
-                    inputfile = inputfile[:-5]
+                            # Giving the Name Format
+                            datetimenow = str(datetime.now())
+                            datetimeformat = "_" + \
+                                datetimenow[:10]+"-"+datetimenow[11:13]+"-" + \
+                                datetimenow[14:16]+"-"+datetimenow[17:19]
 
-                    # Giving the Name Format
-                    datetimenow = str(datetime.now())
-                    datetimeformat = "_" + \
-                        datetimenow[:10]+"-"+datetimenow[11:13]+"-" + \
-                        datetimenow[14:16]+"-"+datetimenow[17:19]
+                            # The workbook is saved in the downloads' output folder of the USER
+                            wb.save(parent+str(inputfile)+"_" +
+                                    str(mod)+datetimeformat+".xlsx")
+                            wb.close()  # Closing the workbook.
 
-                    # The workbook is saved in the downloads' output folder of the USER
-                    wb.save(parent+str(inputfile)+"_vel_octant_analysis_mod_" +
-                            str(mod)+datetimeformat+".xlsx")
-                    wb.close()  # Closing the workbook.
-
-                    # Output a message that the Outputfile is generated for the given input file
-                    st.write("OutputFile Generated for:", inputfile)
+                            # Output a message that the Outputfile is generated for the given input file
+                            st.write("OutputFile Generated for:", inputfile)
+                        else:
+                            continue
+                    else:
+                        continue
 
             # If both the fields are not filled, a message shows up to the USER
             elif uploaded_file == None and multiplefilespath == '':
                 st.markdown("Please enter the path or upload a single file!")
+                st.stop()
 
             # If a single file is uploaded
             else:
                 inputfile = uploaded_file
-
                 wb = Workbook()
                 sheet = wb.active
 
@@ -1054,7 +1118,8 @@ def proj_octant_gui():
                 # Adjusting Column Widths
                 for col in sheet.columns:
                     max_length = 0
-                    column = col[0].column_letter  # Get the column name
+                    # Get the column name
+                    column = col[0].column_letter
                     for cell in col:
                         try:  # Necessary to avoid error on empty cells
                             if len(str(cell.value)) > max_length:
@@ -1065,7 +1130,7 @@ def proj_octant_gui():
                     sheet.column_dimensions[column].width = adjusted_width
 
                 # Name of the input file
-                inputfilenameformat=inputfile.name
+                inputfilenameformat = inputfile.name
                 inputfile.name = inputfile.name[:-5]
 
                 # Giving the Name Format
@@ -1075,13 +1140,15 @@ def proj_octant_gui():
                     datetimenow[14:16]+"-"+datetimenow[17:19]
 
                 # The workbook is saved in the downloads' output folder of the USER
-                wb.save(parent+str(inputfile.name)+"_vel_octant_analysis_mod_" +
+                wb.save(parent+str(inputfile.name)+"_" +
                         str(mod)+datetimeformat+".xlsx")
 
                 wb.close()  # Closing the workbook.
 
                 # Output a message that the Outputfile is generated for the given input file
-                st.write("OutputFile Generated for:", inputfilenameformat)
+                st.write("OutputFile Generated for:",
+                            inputfilenameformat)
+
 
             # Making a zip folder of the Output Folder
             shutil.make_archive(parent, 'zip', parent)
@@ -1105,14 +1172,6 @@ def proj_octant_gui():
     except FileNotFoundError:
         st.markdown("The Path Entered is invalid!")
 
-
-# Version Check
-ver = python_version()
-
-if ver == "3.8.10":
-    print("Correct Version Installed")
-else:
-    print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
 # Calling Main Function of the program
 proj_octant_gui()
