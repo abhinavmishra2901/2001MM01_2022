@@ -978,8 +978,9 @@ def zipdir(path, ziph):
 # Help
 
 # Basic Texts on the Streamlit App
+st.set_page_config(page_title="Octant Batch Processing")
 st.title('Octant Batch Processing')
-st.header('Project 2')
+st.header('CS384: Python Programming - Project 2')
 st.markdown('By Abhinav Mishra (2001MM01) and Hardik Tiwari (2001MM15)')
 
 # Function for the Octant Project GUI
