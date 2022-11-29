@@ -153,9 +153,9 @@ def fk():
     data['w\'v\'v\' mean']=''
     data.at[0,'w\'v\'v\' mean']=round(data['w\'v\'v\''].mean(),3)
 
-    constant_fk2d=0.75 
-    multiplying_factor_3d=0.5 
-    Shear_velocity=2.6**3
+    # constant_fk2d=0.75 
+    # multiplying_factor_3d=0.5 
+    # Shear_velocity=2.6**3
 
     data.at[index,'fku_2d']=round((data.at[0,'u\'u\'u\' mean']+data.at[0,'u\'w\'w\' mean'])*constant_fk2d,3)
     data.at[index,'Fku_2d']=round(data.at[index,'fku_2d']/Shear_velocity,3)
