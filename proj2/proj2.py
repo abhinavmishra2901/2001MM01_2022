@@ -982,7 +982,6 @@ st.set_page_config(page_title="Octant Batch Processing")
 st.title('Octant Batch Processing')
 st.header('CS384: Python Programming - Project 2')
 st.markdown('By Abhinav Mishra (2001MM01) and Hardik Tiwari (2001MM15)')
-
 # Function for the Octant Project GUI
 
 
@@ -1002,7 +1001,7 @@ def proj_octant_gui():
                 mod = int(st.text_input(label="Mod Value",
                                         placeholder="Enter a mod value for computation", value="5000"))
             except ValueError:
-                st.write("Please enter Valid Input in the Mod Value field")
+                st.error("Please enter Valid Input in the Mod Value field", icon="🚨")
                 st.stop()
 
         elif mode == 'Multiple Files Processing':
@@ -1014,7 +1013,7 @@ def proj_octant_gui():
                 mod = int(st.text_input(label="Mod Value",
                                     placeholder="Enter a mod value for computation", value="5000"))
             except ValueError:
-                st.write("Please enter Valid Input in the Mod Value field")
+                st.error("Please enter Valid Input in the Mod Value field", icon="🚨")
                 st.stop()
 
         # Compute button to carry out the computation
@@ -1055,8 +1054,8 @@ def proj_octant_gui():
                 count=0
                 for inputfile in os.listdir():
                     if os.path.isfile(inputfile):
-                        count=1
                         if inputfile.endswith(".xls") or inputfile.endswith(".xlsx"):
+                            count=1
                             wb = Workbook()
                             sheet = wb.active
 
@@ -1094,19 +1093,19 @@ def proj_octant_gui():
                                     str(mod)+datetimeformat+".xlsx")
                             wb.close()  # Closing the workbook.
 
-                            # Output a message that the Outputfile is generated for the given input file
-                            st.write("OutputFile Generated for:", inputfile)
+                            # Output a success message that the Outputfile is generated for the given input file
+                            st.success("OutputFile Generated for: {}.xlsx".format(inputfile),icon="✅")
                         else:
                             continue
                     else:
                         continue
                 if count==0:
-                    st.write("No Excel File(s) exists in the specified path!")
+                    st.warning("No Excel File(s) exists in the specified path!", icon='⚠️')
                     st.stop()
 
             # If both the fields are not filled, a message shows up to the USER
             elif uploaded_file == None and multiplefilespath == '':
-                st.markdown("Please enter the path or upload a single file!")
+                st.error("Please enter the path or upload a single file!", icon="🚨")
                 st.stop()
 
             # If a single file is uploaded
@@ -1152,8 +1151,7 @@ def proj_octant_gui():
                 wb.close()  # Closing the workbook.
 
                 # Output a message that the Outputfile is generated for the given input file
-                st.write("OutputFile Generated for:",
-                            inputfilenameformat)
+                st.success("OutputFile Generated for: {}".format(inputfilenameformat),icon="✅")
 
 
             # Making a zip folder of the Output Folder
