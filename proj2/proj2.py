@@ -16,6 +16,8 @@ from openpyxl.styles.borders import Border, Side, BORDER_THIN
 import math
 import streamlit as st
 import shutil
+from pathlib import Path
+
 
 os.system("cls")
 start_time = datetime.now()
@@ -990,8 +992,8 @@ def proj_octant_gui():
 
         mode = st.radio("What type of processing do you wish to execute?", ['Single File Processing', 'Multiple Files Processing'], index=0,
                         key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, horizontal=True, label_visibility="visible")
-        uploaded_file=None
-        multiplefilespath=''
+        uploaded_file = None
+        multiplefilespath = ''
         if mode == 'Single File Processing':
             # Field to upload the file
             uploaded_file = st.file_uploader(label="Input File", type=[
@@ -1001,7 +1003,8 @@ def proj_octant_gui():
                 mod = int(st.text_input(label="Mod Value",
                                         placeholder="Enter a mod value for computation", value="5000"))
             except ValueError:
-                st.error("Please enter Valid Input in the Mod Value field", icon="🚨")
+                st.error(
+                    "Please enter Valid Input in the Mod Value field", icon="🚨")
                 st.stop()
 
         elif mode == 'Multiple Files Processing':
@@ -1009,11 +1012,12 @@ def proj_octant_gui():
             multiplefilespath = st.text_input(label="Enter the Folder path if you want to compute multiple files:",
                                               placeholder="Folder Path")
             try:
-            # Mod Value taken as input from the USER (Default Value is 5000)
+                # Mod Value taken as input from the USER (Default Value is 5000)
                 mod = int(st.text_input(label="Mod Value",
-                                    placeholder="Enter a mod value for computation", value="5000"))
+                                        placeholder="Enter a mod value for computation", value="5000"))
             except ValueError:
-                st.error("Please enter Valid Input in the Mod Value field", icon="🚨")
+                st.error(
+                    "Please enter Valid Input in the Mod Value field", icon="🚨")
                 st.stop()
 
         # Compute button to carry out the computation
@@ -1022,25 +1026,25 @@ def proj_octant_gui():
         # Parent Directory
         parent = ""
 
-        # If the Output directory is not present, make an output directory called octant_analysis_output in Downloads folder of the USER
-        if (os.path.exists(os.path.expanduser('~').replace('\\', '/')+'/Downloads/octant_analysis_output/') == False):
+        # If the Output directory is not present, make an output directory called octant_analysis_output in Desktop folder of the USER
+        if (os.path.exists(os.path.expanduser('~').replace('\\', '/')+'/Desktop/octant_analysis_output/') == False):
             os.makedirs(os.path.expanduser('~').replace(
-                '\\', '/')+'/Downloads/octant_analysis_output/')
+                '\\', '/')+'/Desktop/octant_analysis_output/')
             parent = os.path.expanduser('~').replace(
-                '\\', '/')+'/Downloads/octant_analysis_output/'
+                '\\', '/')+'/Desktop/octant_analysis_output/'
 
         # Else If the Output directory is present
         else:
 
             # Delete the the Output Directory
             shutil.rmtree((os.path.expanduser('~').replace(
-                '\\', '/')+'/Downloads/octant_analysis_output/'))
+                '\\', '/')+'/Desktop/octant_analysis_output/'))
 
             # Make a new Output Directory
             os.makedirs(os.path.expanduser('~').replace(
-                '\\', '/')+'/Downloads/octant_analysis_output/')
+                '\\', '/')+'/Desktop/octant_analysis_output/')
             parent = os.path.expanduser('~').replace(
-                '\\', '/')+'/Downloads/octant_analysis_output/'
+                '\\', '/')+'/Desktop/octant_analysis_output/'
 
         # If the compute button is clicked
         if (compute):
@@ -1051,11 +1055,11 @@ def proj_octant_gui():
                 os.chdir(multiplefilespath)
 
                 # Iterating through the files in the USER's directory
-                count=0
+                count = 0
                 for inputfile in os.listdir():
                     if os.path.isfile(inputfile):
                         if inputfile.endswith(".xls") or inputfile.endswith(".xlsx"):
-                            count=1
+                            count = 1
                             wb = Workbook()
                             sheet = wb.active
 
@@ -1088,24 +1092,42 @@ def proj_octant_gui():
                                 datetimenow[:10]+"-"+datetimenow[11:13]+"-" + \
                                 datetimenow[14:16]+"-"+datetimenow[17:19]
 
-                            # The workbook is saved in the downloads' output folder of the USER
+                            # The workbook is saved in the Desktop' output folder of the USER
                             wb.save(parent+str(inputfile)+"_" +
                                     str(mod)+datetimeformat+".xlsx")
                             wb.close()  # Closing the workbook.
 
                             # Output a success message that the Outputfile is generated for the given input file
-                            st.success("OutputFile Generated for: {}.xlsx".format(inputfile),icon="✅")
+                            st.success("OutputFile Generated for: {}.xlsx".format(
+                                inputfile), icon="✅")
                         else:
                             continue
                     else:
                         continue
-                if count==0:
-                    st.warning("No Excel File(s) exists in the specified path!", icon='⚠️')
+                if count == 0:
+                    st.warning(
+                        "No Excel File(s) exists in the specified path!", icon='⚠️')
                     st.stop()
+
+                # Making a zip folder of the Output Folder
+                shutil.make_archive(parent, 'zip', parent)
+
+                # Telling the USER that the files are downloaded in their Desktop folder, Also giving them an option to download the same
+                with open(os.path.dirname(os.path.dirname(parent))+"/octant_analysis_output.zip", "rb") as fp:
+                    st.download_button(
+                        label="Download ZIP",
+                        data=fp,
+                        file_name="Octant Batch Processing_" +
+                        datetimenow[:10]+"-"+datetimenow[11:13]+"-" +
+                        datetimenow[14:16]+"-"+datetimenow[17:19]+".zip",
+                        mime="application/zip"
+                    )
+                fp.close()
 
             # If both the fields are not filled, a message shows up to the USER
             elif uploaded_file == None and multiplefilespath == '':
-                st.error("Please enter the path or upload a single file!", icon="🚨")
+                st.error(
+                    "Please enter the path or upload a single file!", icon="🚨")
                 st.stop()
 
             # If a single file is uploaded
@@ -1144,33 +1166,29 @@ def proj_octant_gui():
                     datetimenow[:10]+"-"+datetimenow[11:13]+"-" + \
                     datetimenow[14:16]+"-"+datetimenow[17:19]
 
-                # The workbook is saved in the downloads' output folder of the USER
-                wb.save(parent+str(inputfile.name)+"_" +
+                # The workbook is saved in the Desktop' output folder of the USER
+
+                wb.save("C:\\Users\\PILR\\Desktop\\"+str(inputfile.name)+"_" +
                         str(mod)+datetimeformat+".xlsx")
 
                 wb.close()  # Closing the workbook.
 
                 # Output a message that the Outputfile is generated for the given input file
-                st.success("OutputFile Generated for: {}".format(inputfilenameformat),icon="✅")
-
-
-            # Making a zip folder of the Output Folder
-            shutil.make_archive(parent, 'zip', parent)
-
-            # Telling the USER that the files are downloaded in their Downloads folder, Also giving them an option to download the same
-            st.caption("The Files are downloaded and are in your Downloads folder. If You cannot find them you can still download them by Clicking on 'Download ZIP' Button")
-            with open(os.path.dirname(os.path.dirname(parent))+"/octant_analysis_output.zip", "rb") as fp:
-                st.download_button(
-                    label="Download ZIP",
-                    data=fp,
-                    file_name="Output.zip",
-                    mime="application/zip"
-                )
-            fp.close()
+                st.success("OutputFile Generated for: {}".format(
+                    inputfilenameformat), icon="✅")
+                with open("C:\\Users\\PILR\\Desktop\\"+str(inputfile.name)+"_" + str(mod)+datetimeformat+".xlsx", "rb") as fp:
+                    st.download_button(
+                        label="Download File",
+                        data=fp,
+                        file_name=str(inputfile.name)+"_" +
+                        str(mod)+datetimeformat+".xlsx",
+                        mime="text/excel"
+                    )
+                fp.close()
 
         # Deleting the Output folder as a zip file is already generated for the same
         shutil.rmtree((os.path.expanduser('~').replace(
-            '\\', '/')+'/Downloads/octant_analysis_output/'))
+            '\\', '/')+'/Desktop/octant_analysis_output/'))
 
     # If the path entered is invalid
     except FileNotFoundError:
@@ -1186,6 +1204,6 @@ end_time = datetime.now()
 # Deleting the Output folder as a zip file is already generated for the same
 try:
     os.rmdir(os.path.expanduser('~').replace(
-        '\\', '/')+'/Downloads/octant_analysis_output/')
+        '\\', '/')+'/Desktop/octant_analysis_output/')
 except:
     pass
