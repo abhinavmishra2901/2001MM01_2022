@@ -989,11 +989,12 @@ st.markdown('By Abhinav Mishra (2001MM01) and Hardik Tiwari (2001MM15)')
 
 def proj_octant_gui():
     try:
-
+        st.write("*"*30)
         mode = st.radio("What type of processing do you wish to execute?", ['Single File Processing', 'Multiple Files Processing'], index=0,
                         key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, horizontal=True, label_visibility="visible")
         uploaded_file = None
         multiplefilespath = ''
+        st.write("*"*30)
         if mode == 'Single File Processing':
             # Field to upload the file
             uploaded_file = st.file_uploader(label="Input File", type=[
@@ -1168,7 +1169,7 @@ def proj_octant_gui():
 
                 # The workbook is saved in the Desktop' output folder of the USER
 
-                wb.save("C:\\Users\\PILR\\Desktop\\"+str(inputfile.name)+"_" +
+                wb.save(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')+str(inputfile.name)+"_" +
                         str(mod)+datetimeformat+".xlsx")
 
                 wb.close()  # Closing the workbook.
@@ -1176,7 +1177,7 @@ def proj_octant_gui():
                 # Output a message that the Outputfile is generated for the given input file
                 st.success("OutputFile Generated for: {}".format(
                     inputfilenameformat), icon="✅")
-                with open("C:\\Users\\PILR\\Desktop\\"+str(inputfile.name)+"_" + str(mod)+datetimeformat+".xlsx", "rb") as fp:
+                with open(os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') +str(inputfile.name)+"_" + str(mod)+datetimeformat+".xlsx", "rb") as fp:
                     st.download_button(
                         label="Download File",
                         data=fp,
@@ -1192,7 +1193,7 @@ def proj_octant_gui():
 
     # If the path entered is invalid
     except FileNotFoundError:
-        st.markdown("The Path Entered is invalid!")
+        st.error("The Path Entered is invalid!", icon="🚨")
 
 
 # Calling Main Function of the program
