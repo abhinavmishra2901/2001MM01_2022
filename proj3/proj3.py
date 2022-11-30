@@ -15,7 +15,6 @@ import streamlit as st
 start_time = datetime.now()
 
 start_time = datetime.now() 
-# st.write(start_time.strftime("%c"))
 
 
 #Help
@@ -25,6 +24,7 @@ st.set_page_config(page_title="Web Based Interface for PSAT")
 st.title('Web Based Interface for PSAT')
 st.header('CS384: Python Programming - Project 3')
 st.markdown('By Abhinav Mishra (2001MM01) and Hardik Tiwari (2001MM15)')
+st.text(start_time.strftime("%c"))
 try:
 	constant_fk2d=(st.number_input("constant_fk2d", value=0.75))
 	multiplying_factor_3d=(st.number_input("multiplying_factor_3d", value=0.5))
