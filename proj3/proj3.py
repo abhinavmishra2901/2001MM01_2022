@@ -951,6 +951,14 @@ def proj_psat_gui():
 						write_timestamp_to_file(name)    
 						name = add_front_name(name,i)
 						store()
+			with open("Results_v2.csv", "rb") as fp:
+				st.download_button(
+					label="Download File",
+					data=fp,
+					file_name="Results_v2.csv",
+					mime="text/csv"
+				)
+			fp.close()
 			#This shall be the last lines of the code.
 			end_time = datetime.now()
 			st.info('Duration of Program Execution: {}'.format(end_time - start_time), icon="ℹ️")
@@ -960,7 +968,6 @@ def proj_psat_gui():
 	except:
 		st.error("Some Unknown Error occurred", icon='🚨')
 		st.stop()		
-
 
 end_time = datetime.now()
 
@@ -978,6 +985,7 @@ end_time = datetime.now()
 
 
 proj_psat_gui()
+
 
 
 
