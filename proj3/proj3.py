@@ -25,11 +25,18 @@ st.set_page_config(page_title="Web Based Interface for PSAT")
 st.title('Web Based Interface for PSAT')
 st.header('CS384: Python Programming - Project 3')
 st.markdown('By Abhinav Mishra (2001MM01) and Hardik Tiwari (2001MM15)')
-constant_fk2d=(st.number_input("constant_fk2d", value=0.75))
-multiplying_factor_3d=(st.number_input("multiplying_factor_3d", value=0.5))
-Shear_velocity= st.text_input("Shear_velocity", value='2.6**3')
-x=Shear_velocity.split("**")
-Shear_velocity=pow(float(x[0]), float(x[1]))
+try:
+	constant_fk2d=(st.number_input("constant_fk2d", value=0.75))
+	multiplying_factor_3d=(st.number_input("multiplying_factor_3d", value=0.5))
+	Shear_velocity= st.text_input("Shear_velocity", value='2.6**3')
+	x=Shear_velocity.split("**")
+	Shear_velocity=pow(float(x[0]), float(x[1]))
+except ValueError:
+	st.error("Please enter valid values!", icon='🚨')
+	st.stop()
+except:
+	st.error("Some Unknown Error occurred", icon='🚨')
+	st.stop()		
 
 def proj_psat_gui():
 	try:
