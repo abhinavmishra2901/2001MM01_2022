@@ -15,7 +15,7 @@ This is a Repository for my CS384 Tutorials and Projects.
 | Project 2             | Web Based Interface for Tut07 using [Streamlit Library](https://streamlit.io/)                          |
 | Project 3             | Web Based Interface for PSAT using [Streamlit Library](https://streamlit.io/)                           | 
 
-*All Tutorials and Projects were completed under the guidance of*
-**_Dr. Mayank Agarwal_**
-**_Assistant Professor_**
+*All Tutorials and Projects were completed under the guidance of:*\
+**_Dr. Mayank Agarwal_**\
+**_Assistant Professor_**\
 **_Indian Institute of Technology Patna_**
