@@ -13,5 +13,5 @@ This is a Repository for my CS384 Tutorials and Projects.
 | Tutorial 7             | Octant Batch Processing and Merging of Assignment Tut01-05       |
 | Tutorial 8             | Cricket Scorecard Generator        | 
 | Project 2             | Web Based Interface for Tut07 using Streamlit Library       |
-| Project 3             | Web Based Interface for PSAT using Streamlit (https://streamlit.io/) Library        | 
+| Project 3             | Web Based Interface for PSAT using [Streamlit](https://streamlit.io/) Library        | 
 
